@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>GopherJSIPCBridge demo</title>
+        <script type="text/javascript">
+            // HACK: Override console.log to intercept output from GopherJS and
+            // put it into a visible container
+            console = {};
+            console.log = function (message) {
+                var formatted = message + "\n";
+                document.getElementById("console").value += formatted;
+            }
+        </script>
+    </head>
+    <body>
+        <h1>GopherJS IPC Bridge Demo</h1>
+        <textarea id="console" rows="20" cols="60"></textarea>
+        <script type="text/javascript" src="client.js"></script>
+    </body>
+</html>

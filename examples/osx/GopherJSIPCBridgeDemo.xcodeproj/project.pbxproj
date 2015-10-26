@@ -1,0 +1,400 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		163DBE391BDBE8CC004ABA29 /* GIBWKWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */; settings = {ASSET_TAGS = (); }; };
+		163DBE3C1BDBF9FB004ABA29 /* GIBWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */; settings = {ASSET_TAGS = (); }; };
+		163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */; settings = {ASSET_TAGS = (); }; };
+		163DBE421BDD86FA004ABA29 /* NSString+GIB.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE411BDD86FA004ABA29 /* NSString+GIB.m */; settings = {ASSET_TAGS = (); }; };
+		163DBE451BDE54DB004ABA29 /* NSData+GIB.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE441BDE54DB004ABA29 /* NSData+GIB.m */; settings = {ASSET_TAGS = (); }; };
+		163DBE481BDE6F72004ABA29 /* GIBBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE471BDE6F72004ABA29 /* GIBBridge.m */; settings = {ASSET_TAGS = (); }; };
+		164F3AC91BD81F3500C2E92A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 164F3AC81BD81F3500C2E92A /* WebKit.framework */; };
+		165FEE131BDAC9610053E67F /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 165FEE121BDAC9610053E67F /* JavaScriptCore.framework */; };
+		166477F01BDA799100EF78DA /* gib_connection_manager_posix.cc in Sources */ = {isa = PBXBuildFile; fileRef = 166477EB1BDA799100EF78DA /* gib_connection_manager_posix.cc */; settings = {ASSET_TAGS = (); }; };
+		166477F11BDA799100EF78DA /* gib_connection_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 166477ED1BDA799100EF78DA /* gib_connection_manager.cc */; settings = {ASSET_TAGS = (); }; };
+		16EFEEFC1BD79F3B00C1E7D8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 16EFEEFB1BD79F3B00C1E7D8 /* AppDelegate.m */; };
+		16EFEEFF1BD79F3B00C1E7D8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 16EFEEFE1BD79F3B00C1E7D8 /* main.m */; };
+		16EFEF011BD79F3B00C1E7D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 16EFEF001BD79F3B00C1E7D8 /* Assets.xcassets */; };
+		16EFEF041BD79F3B00C1E7D8 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 16EFEF021BD79F3B00C1E7D8 /* MainMenu.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		163DBE371BDBE8CC004ABA29 /* GIBWKWebViewBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBWKWebViewBridge.h; sourceTree = "<group>"; };
+		163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBWKWebViewBridge.m; sourceTree = "<group>"; };
+		163DBE3A1BDBF9FB004ABA29 /* GIBWebViewBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBWebViewBridge.h; sourceTree = "<group>"; };
+		163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBWebViewBridge.m; sourceTree = "<group>"; };
+		163DBE3D1BDD330F004ABA29 /* GIBConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBConnectionManager.h; sourceTree = "<group>"; };
+		163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GIBConnectionManager.mm; sourceTree = "<group>"; };
+		163DBE401BDD86FA004ABA29 /* NSString+GIB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+GIB.h"; sourceTree = "<group>"; };
+		163DBE411BDD86FA004ABA29 /* NSString+GIB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+GIB.m"; sourceTree = "<group>"; };
+		163DBE431BDE54DB004ABA29 /* NSData+GIB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GIB.h"; sourceTree = "<group>"; };
+		163DBE441BDE54DB004ABA29 /* NSData+GIB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GIB.m"; sourceTree = "<group>"; };
+		163DBE461BDE6F72004ABA29 /* GIBBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBBridge.h; sourceTree = "<group>"; };
+		163DBE471BDE6F72004ABA29 /* GIBBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBBridge.m; sourceTree = "<group>"; };
+		164F3AC81BD81F3500C2E92A /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		165FEE121BDAC9610053E67F /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		166477EB1BDA799100EF78DA /* gib_connection_manager_posix.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gib_connection_manager_posix.cc; sourceTree = "<group>"; };
+		166477EC1BDA799100EF78DA /* gib_connection_manager_posix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gib_connection_manager_posix.h; sourceTree = "<group>"; };
+		166477ED1BDA799100EF78DA /* gib_connection_manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = gib_connection_manager.cc; sourceTree = "<group>"; };
+		166477EE1BDA799100EF78DA /* gib_connection_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gib_connection_manager.h; sourceTree = "<group>"; };
+		16EFEEF71BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GopherJSIPCBridgeDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		16EFEEFA1BD79F3B00C1E7D8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		16EFEEFB1BD79F3B00C1E7D8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		16EFEEFE1BD79F3B00C1E7D8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		16EFEF001BD79F3B00C1E7D8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		16EFEF031BD79F3B00C1E7D8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		16EFEF051BD79F3B00C1E7D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		16EFEEF41BD79F3B00C1E7D8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				165FEE131BDAC9610053E67F /* JavaScriptCore.framework in Frameworks */,
+				164F3AC91BD81F3500C2E92A /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		164F3AB11BD7A05C00C2E92A /* GopherJSIPCBridge */ = {
+			isa = PBXGroup;
+			children = (
+				166477F21BDA7FE200EF78DA /* Cocoa */,
+				166477E81BDA797800EF78DA /* Core */,
+			);
+			name = GopherJSIPCBridge;
+			path = ../../..;
+			sourceTree = "<group>";
+		};
+		164F3AC71BD81F2600C2E92A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				165FEE121BDAC9610053E67F /* JavaScriptCore.framework */,
+				164F3AC81BD81F3500C2E92A /* WebKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		166477E81BDA797800EF78DA /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				166477EB1BDA799100EF78DA /* gib_connection_manager_posix.cc */,
+				166477EC1BDA799100EF78DA /* gib_connection_manager_posix.h */,
+				166477ED1BDA799100EF78DA /* gib_connection_manager.cc */,
+				166477EE1BDA799100EF78DA /* gib_connection_manager.h */,
+			);
+			name = Core;
+			path = core;
+			sourceTree = "<group>";
+		};
+		166477F21BDA7FE200EF78DA /* Cocoa */ = {
+			isa = PBXGroup;
+			children = (
+				163DBE461BDE6F72004ABA29 /* GIBBridge.h */,
+				163DBE471BDE6F72004ABA29 /* GIBBridge.m */,
+				163DBE3A1BDBF9FB004ABA29 /* GIBWebViewBridge.h */,
+				163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */,
+				163DBE371BDBE8CC004ABA29 /* GIBWKWebViewBridge.h */,
+				163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */,
+				163DBE3D1BDD330F004ABA29 /* GIBConnectionManager.h */,
+				163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */,
+				163DBE431BDE54DB004ABA29 /* NSData+GIB.h */,
+				163DBE441BDE54DB004ABA29 /* NSData+GIB.m */,
+				163DBE401BDD86FA004ABA29 /* NSString+GIB.h */,
+				163DBE411BDD86FA004ABA29 /* NSString+GIB.m */,
+			);
+			name = Cocoa;
+			path = cocoa;
+			sourceTree = "<group>";
+		};
+		16EFEEEE1BD79F3B00C1E7D8 = {
+			isa = PBXGroup;
+			children = (
+				16EFEEF91BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo */,
+				16EFEEF81BD79F3B00C1E7D8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		16EFEEF81BD79F3B00C1E7D8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				16EFEEF71BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		16EFEEF91BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo */ = {
+			isa = PBXGroup;
+			children = (
+				164F3AB11BD7A05C00C2E92A /* GopherJSIPCBridge */,
+				16EFEEFA1BD79F3B00C1E7D8 /* AppDelegate.h */,
+				16EFEEFB1BD79F3B00C1E7D8 /* AppDelegate.m */,
+				16EFEF001BD79F3B00C1E7D8 /* Assets.xcassets */,
+				16EFEF021BD79F3B00C1E7D8 /* MainMenu.xib */,
+				16EFEF051BD79F3B00C1E7D8 /* Info.plist */,
+				16EFEEFD1BD79F3B00C1E7D8 /* Supporting Files */,
+				164F3AC71BD81F2600C2E92A /* Frameworks */,
+			);
+			path = GopherJSIPCBridgeDemo;
+			sourceTree = "<group>";
+		};
+		16EFEEFD1BD79F3B00C1E7D8 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				16EFEEFE1BD79F3B00C1E7D8 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		16EFEEF61BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 16EFEF081BD79F3B00C1E7D8 /* Build configuration list for PBXNativeTarget "GopherJSIPCBridgeDemo" */;
+			buildPhases = (
+				165FEE141BDAD0630053E67F /* Build/Copy Go Code */,
+				16EFEEF31BD79F3B00C1E7D8 /* Sources */,
+				16EFEEF41BD79F3B00C1E7D8 /* Frameworks */,
+				16EFEEF51BD79F3B00C1E7D8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GopherJSIPCBridgeDemo;
+			productName = GopherJSIPCBridgeDemo;
+			productReference = 16EFEEF71BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		16EFEEEF1BD79F3B00C1E7D8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = "Jacob Howard";
+				TargetAttributes = {
+					16EFEEF61BD79F3B00C1E7D8 = {
+						CreatedOnToolsVersion = 7.0.1;
+					};
+				};
+			};
+			buildConfigurationList = 16EFEEF21BD79F3B00C1E7D8 /* Build configuration list for PBXProject "GopherJSIPCBridgeDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 16EFEEEE1BD79F3B00C1E7D8;
+			productRefGroup = 16EFEEF81BD79F3B00C1E7D8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				16EFEEF61BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		16EFEEF51BD79F3B00C1E7D8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16EFEF011BD79F3B00C1E7D8 /* Assets.xcassets in Resources */,
+				16EFEF041BD79F3B00C1E7D8 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		165FEE141BDAD0630053E67F /* Build/Copy Go Code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build/Copy Go Code";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Set GOPATH and PATH\n# HACK: Assuming we are building the example from a copy of the\n# GopherJSIPCBridge code correctly located in the user's GOPATH.  They'll have\n# to adjust this manually otherwise...\nexport GOPATH=\"$PROJECT_DIR/../../../../../..\"\nexport PATH=\"$GOPATH/bin:$PATH\"\n\n# Make sure the bundle's resources path exists\nRESOURCES_PATH=\"$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nmkdir -p \"$RESOURCES_PATH\" || exit $?\n\n# Build the GopherJS-based client and put it into resources\nif [ \"$CONFIGURATION\" == \"Debug\" ]; then\n    MINIFY_FLAG=\"\"\nelse\n    MINIFY_FLAG=\"-m\"\nfi\ngopherjs build $MINIFY_FLAG -v \\\n    -o \"$RESOURCES_PATH/client.js\" \\\n    \"$PROJECT_DIR/../common/go/benchmark.go\" \\\n    \"$PROJECT_DIR/../common/go/client_js.go\" || exit $?\n\n# Copy the client HTML UI into resources\ncp \"$PROJECT_DIR/../common/html/client.html\" \\\n\"$RESOURCES_PATH/client.html\" || exit $?\n\n# Build the Go-based client and server and put them into resources\npushd \"$RESOURCES_PATH\" > /dev/null\ngo build \"$PROJECT_DIR/../common/go/client.go\" \\\n         \"$PROJECT_DIR/../common/go/benchmark.go\" || exit $?\ngo build \"$PROJECT_DIR/../common/go/server.go\" \\\n         \"$PROJECT_DIR/../common/go/benchmark.go\" || exit $?\npopd > /dev/null\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		16EFEEF31BD79F3B00C1E7D8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				163DBE3C1BDBF9FB004ABA29 /* GIBWebViewBridge.m in Sources */,
+				163DBE391BDBE8CC004ABA29 /* GIBWKWebViewBridge.m in Sources */,
+				163DBE451BDE54DB004ABA29 /* NSData+GIB.m in Sources */,
+				166477F01BDA799100EF78DA /* gib_connection_manager_posix.cc in Sources */,
+				16EFEEFF1BD79F3B00C1E7D8 /* main.m in Sources */,
+				163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */,
+				166477F11BDA799100EF78DA /* gib_connection_manager.cc in Sources */,
+				163DBE481BDE6F72004ABA29 /* GIBBridge.m in Sources */,
+				163DBE421BDD86FA004ABA29 /* NSString+GIB.m in Sources */,
+				16EFEEFC1BD79F3B00C1E7D8 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		16EFEF021BD79F3B00C1E7D8 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				16EFEF031BD79F3B00C1E7D8 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		16EFEF061BD79F3B00C1E7D8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../vendor/asio/asio/include";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		16EFEF071BD79F3B00C1E7D8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../vendor/asio/asio/include";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		16EFEF091BD79F3B00C1E7D8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = GopherJSIPCBridgeDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.havoc.GopherJSIPCBridgeDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		16EFEF0A1BD79F3B00C1E7D8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = GopherJSIPCBridgeDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.havoc.GopherJSIPCBridgeDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		16EFEEF21BD79F3B00C1E7D8 /* Build configuration list for PBXProject "GopherJSIPCBridgeDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16EFEF061BD79F3B00C1E7D8 /* Debug */,
+				16EFEF071BD79F3B00C1E7D8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		16EFEF081BD79F3B00C1E7D8 /* Build configuration list for PBXNativeTarget "GopherJSIPCBridgeDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16EFEF091BD79F3B00C1E7D8 /* Debug */,
+				16EFEF0A1BD79F3B00C1E7D8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 16EFEEEF1BD79F3B00C1E7D8 /* Project object */;
+}
