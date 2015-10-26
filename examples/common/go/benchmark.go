@@ -64,16 +64,6 @@ func benchmarkClient(c net.Conn) {
 	fmt.Println("Creating RPC client...")
 	client := rpc.NewClient(c)
 
-	// Invoke the add method
-	args := &AddArgs{15, 22}
-	var result int
-	err := client.Call("RPCActions.Add", args, &result)
-	if err != nil {
-		fmt.Println("error: RPC invocation failed:", err)
-		return
-	}
-	fmt.Println("Result was", result)
-
 	// Invoke Add over many times and test the average response time
 	n := 10000
 	fmt.Println("Invoking Add over RPC", n, "times...")
@@ -98,6 +88,8 @@ func benchmarkClient(c net.Conn) {
 		elapsed.Seconds(),
 		elapsed.Seconds() / float64(n),
 	)
+
+	// TODO: Add test of SayHello invocation
 
 	// All done
 	fmt.Println("Benchmarking client complete.")

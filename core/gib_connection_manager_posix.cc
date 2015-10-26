@@ -54,7 +54,6 @@ void gib::ConnectionManagerPosix::connect_async(
     std::int32_t connection_id = _next_connection_id++;
 
     // Create the socket
-    // TODO: Do we need to open the socket?
     _connections.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(connection_id),
