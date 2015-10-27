@@ -69,6 +69,8 @@
 }
 
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+    // TODO: Add shutdown of previous run
+
     // Compute the IPC socket path
     NSString *socketPath =
         [NSTemporaryDirectory() stringByAppendingPathComponent:@"wv.sock"];
@@ -96,6 +98,8 @@
 }
 
 - (IBAction)startWKWebViewExample:(id)sender {
+    // TODO: Add shutdown of previous run
+
     // Create the WKWebView (has to be done in code, can't be done with NIB)
     NSRect frame = self.wkWebViewContainer.frame;
     frame.origin = NSMakePoint(0, 0);
@@ -144,6 +148,8 @@ didFinishNavigation:(WKNavigation *)navigation {
 }
 
 - (IBAction)startRawGoExample:(id)sender {
+    // TODO: Add shutdown of previous run
+
     // Compute the IPC socket path
     NSString *socketPath =
         [NSTemporaryDirectory() stringByAppendingPathComponent:@"go.sock"];

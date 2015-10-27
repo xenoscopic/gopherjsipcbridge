@@ -65,7 +65,7 @@ func benchmarkClient(c net.Conn) {
 	client := rpc.NewClient(c)
 
 	// Invoke Add over many times and test the average response time
-	n := 10000
+	n := 1000
 	fmt.Println("Invoking Add over RPC", n, "times...")
 	start := time.Now()
 	for i := 0; i < n; i++ {
