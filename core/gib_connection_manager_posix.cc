@@ -7,7 +7,9 @@
 #include <unistd.h>
 
 
-gib::ConnectionManagerPosix::ConnectionManagerPosix() : ConnectionManager() {
+gib::ConnectionManagerPosix::ConnectionManagerPosix() : ConnectionManager(),
+_next_connection_id(0),
+_next_listener_id(0) {
 
 }
 
@@ -313,7 +315,7 @@ void gib::ConnectionManagerPosix::listener_accept_async(
     // Compute the next connection id.  Just to be paranoid, make sure we don't
     // overflow the maximum value, because we use -1 as the invalid identifier.
     if (_next_connection_id < 0) {
-        handler(-1, "connection ids exhausted");
+        handler(-1, "listener ids exhausted");
         return;
     }
     std::int32_t connection_id = _next_connection_id++;
