@@ -1,6 +1,7 @@
 // Foundation imports
 #import <Foundation/Foundation.h>
 
+
 @interface NSString (GIB)
 
 // Computes the UTF-8-encoded version of the string and generates the

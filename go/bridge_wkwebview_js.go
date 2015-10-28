@@ -62,7 +62,8 @@ func init() {
 				sequences: newSequencer(),
 			}
 
-			// Create a wrapper for the host to interface with
+			// Create a wrapper for the host to interface with for sending
+			// results
 			js.Global.Set("_GIBWKWebViewBridge", js.MakeWrapper(bridge))
 
 			// Decode the initialization message

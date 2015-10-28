@@ -4,7 +4,6 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 
 
-
 @implementation GIBWebViewBridge
 
 - (instancetype)initWithWebView:(WebView *)webView

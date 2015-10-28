@@ -6,9 +6,9 @@ package ipc
 import sync "github.com/gopherjs/gopherjs/nosync"
 
 // sequencer is a small utility class to manage response channels for
-// request/response sequences where the response can't be directed by a
-// callback (e.g. if there isn't a way to pass callbacks across the
-// JavaScript/host barrier)
+// request/response sequences where the response can't be routed by a callback
+// (e.g. if there isn't a way to pass callbacks across the JavaScript/host
+// barrier)
 type sequencer struct {
 	// Faux lock, mostly for future-proof code
 	sync.Mutex

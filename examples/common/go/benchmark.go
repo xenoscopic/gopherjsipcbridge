@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-
 // RPCActions represents a simple RPC interface
 type RPCActions struct{}
 

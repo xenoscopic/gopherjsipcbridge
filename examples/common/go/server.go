@@ -11,7 +11,6 @@ import (
 // GopherJSIPCBridge imports
 import ipc "github.com/havoc-io/gopherjsipcbridge/go"
 
-
 func main() {
 	// Parse command line arguments - there should be only one (aside from the
 	// process image name): the name of the socket on which to bind

@@ -3,6 +3,7 @@
 // GopherJSIPCBridge imports
 #import "NSData+GIB.h"
 
+
 @implementation NSString (GIB)
 
 - (NSString *)base64EncodedString {
