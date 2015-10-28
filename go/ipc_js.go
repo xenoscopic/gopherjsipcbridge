@@ -54,11 +54,21 @@ func (c *ipcConn) Write(b []byte) (int, error) {
 }
 
 func (c *ipcConn) Close() error {
+	// If the connection is already closed, do nothing
+	if c.connectionId == -1 {
+		return nil
+	}
+
 	// Dispatch the request through the bridge
 	resultChannel := global.bridge.ConnectionClose(c.connectionId)
 
 	// Wait for the result
 	result := <-resultChannel
+
+	// If we were successful, mark the connection as closed
+	if result.err == nil {
+		c.connectionId = -1
+	}
 
 	// All done
 	return result.err
@@ -146,11 +156,21 @@ func (l *ipcListener) Accept() (net.Conn, error) {
 }
 
 func (l *ipcListener) Close() error {
+	// If the listener is already closed, do nothing
+	if l.listenerId == -1 {
+		return nil
+	}
+
 	// Dispatch the request through the bridge
 	resultChannel := global.bridge.ConnectionClose(l.listenerId)
 
 	// Wait for the result
 	result := <-resultChannel
+
+	// If we were successful, mark the listener as closed
+	if result.err == nil {
+		l.listenerId = -1
+	}
 
 	// All done
 	return result.err
