@@ -62,7 +62,7 @@
             // the handler is invoked
             NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
 
-            // Call the Objective-C handler on the main thread
+            // Call the Objective-C handler on the dispatch queue
             dispatch_async(queue, ^{
                 handler([NSNumber numberWithInt:connectionId], errCocoa);
             });
@@ -79,10 +79,13 @@
 
     // Verify that the allocation succeeded
     if (!buffer) {
-        // Call the Objective-C handler on the main thread
-        dispatch_async(_dispatchQueue, ^{
+        // Call the Objective-C handler on the dispatch queue
+        dispatch_async(self.dispatchQueue, ^{
             handler([NSData data], @"read buffer allocation failed");
         });
+
+        // Bail
+        return;
     }
 
     // Get dispatch queue
@@ -110,7 +113,7 @@
             // the handler is invoked
             NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
 
-            // Call the Objective-C handler on the main thread
+            // Call the Objective-C handler on the dispatch queue
             dispatch_async(queue, ^{
                 handler(buffer, errCocoa);
             });
@@ -143,7 +146,7 @@
             // the handler is invoked
             NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
 
-            // Call the Objective-C handler on the main thread
+            // Call the Objective-C handler on the dispatch queue
             dispatch_async(queue, ^{
                 handler([NSNumber numberWithUnsignedInteger:count], errCocoa);
             });
@@ -164,7 +167,7 @@
             // the handler is invoked
             NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
 
-            // Call the Objective-C handler on the main thread
+            // Call the Objective-C handler on the dispatch queue
             dispatch_async(queue, ^{
                 handler(errCocoa);
             });
@@ -185,7 +188,7 @@
             // the handler is invoked
             NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
 
-            // Call the Objective-C handler on the main thread
+            // Call the Objective-C handler on the dispatch queue
             dispatch_async(queue, ^{
                 handler([NSNumber numberWithInt:listenerId], errCocoa);
             });
@@ -206,7 +209,7 @@
             // the handler is invoked
             NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
 
-            // Call the Objective-C handler on the main thread
+            // Call the Objective-C handler on the dispatch queue
             dispatch_async(queue, ^{
                 handler([NSNumber numberWithInt:connectionId], errCocoa);
             });
@@ -227,7 +230,7 @@
             // the handler is invoked
             NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
 
-            // Call the Objective-C handler on the main thread
+            // Call the Objective-C handler on the dispatch queue
             dispatch_async(queue, ^{
                 handler(errCocoa);
             });

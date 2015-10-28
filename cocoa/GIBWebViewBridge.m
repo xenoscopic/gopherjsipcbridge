@@ -108,6 +108,15 @@
     // Decode the data
     NSData *data = [data64 base64DecodeBytes];
 
+    // Verify that it decoded correctly
+    if (!data) {
+        // If not, call the callback to indicate failure
+        [callback callWithArguments:@[@0, @"invalid base64 encoding"]];
+
+        // Bail
+        return;
+    }
+
     // Dispatch the request to the connection manager with a callback adapter
     [self.connectionManager connectionWriteAsync:connectionId
                                             data:data
@@ -194,7 +203,8 @@
     self.jsProxy = [[GIBWebViewBridgeProxy alloc] init];
 
     // Install the proxy
-    [self.jsContext[@"_GIBJSContextBridgeInitialize"] callWithArguments:@[self.jsProxy, initializationMessage]];
+    [self.jsContext[@"_GIBJSContextBridgeInitialize"]
+     callWithArguments:@[self.jsProxy, initializationMessage]];
 
     // All done
     return self;
