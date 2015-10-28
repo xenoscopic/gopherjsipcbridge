@@ -1,6 +1,6 @@
 // +build js
 
-package gib
+package ipc
 
 // System imports
 import (

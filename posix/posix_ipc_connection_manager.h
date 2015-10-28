@@ -1,39 +1,52 @@
-#ifndef GIB_CONNECTION_MANAGER_POSIX_H
-#define GIB_CONNECTION_MANAGER_POSIX_H
+#ifndef POSIX_IPC_CONNECTION_MANAGER_H
+#define POSIX_IPC_CONNECTION_MANAGER_H
 
+
+// C standard includes
+#include <cstdlib>
+#include <cstdint>
 
 // Standard includes
-#include <map>
+#include <string>
+#include <functional>
+#include <thread>
 #include <mutex>
+#include <map>
 
-// GopherJSIPCBridge includes
-#include "gib_connection_manager.h"
+// asio includes
+#define ASIO_STANDALONE
+#include <asio.hpp>
 
 
 namespace gib {
 
 
-// ConnectionManager implementation for POSIX systems.  All implementations of
-// ConnectionManager are implicitly non-copyable.  All implementations must also
-// be thread-safe.  Handlers passed to the connection manager will be invoked
-// *during* the call that passed the handler (if there is an error starting the
-// asynchronous operation or the operation can be completed synchronously
-// without blocking) or will be invoked from the ConnectionManager's I/O pumping
-// thread.  Callers/handlers must be prepared for either eventuality.  All
-// implementations must close any managed connections automatically upon
-// destruction.
-class ConnectionManagerPosix : public ConnectionManager {
+// POSIXIPCConnectionManager implements IPC connection facilities on POSIX
+// platforms using UNIX domain sockets.  It is completely thread-safe.  Handlers
+// passed to the connection manager will be invoked *during* the call that
+// passed the handler (if there is an error starting the asynchronous operation
+// or the operation can be completed synchronously without blocking) or will be
+// invoked from the POSIXIPCConnectionManager's I/O pumping thread.  Callers and
+// handlers must be prepared for either eventuality.  All open connections will
+// automatically be closed upon destruction.
+class POSIXIPCConnectionManager final {
 
 public:
 
     // Constructor
-    ConnectionManagerPosix();
+    POSIXIPCConnectionManager();
+
+    // Disable copying
+    POSIXIPCConnectionManager(const POSIXIPCConnectionManager &) = delete;
+    POSIXIPCConnectionManager& operator=(
+        const POSIXIPCConnectionManager &
+    ) = delete;
 
     // Destructor
-    virtual ~ConnectionManagerPosix();
+    ~POSIXIPCConnectionManager();
 
     // Asynchronously create a new connection
-    virtual void connect_async(
+    void connect_async(
         const std::string & path,
         std::function<void(std::int32_t, const std::string &)> handler
     );
@@ -41,7 +54,7 @@ public:
     // Asynchronously read from a connection.  The client is responsible for
     // ensuring that the underlying buffer persists for the duration of the
     // read.
-    virtual void connection_read_async(
+    void connection_read_async(
         std::int32_t connection_id,
         void * buffer,
         std::size_t length,
@@ -51,7 +64,7 @@ public:
     // Asynchronously write to a connection.  The client is responsible for
     // ensuring that the underlying buffer persists for the duration of the
     // write.
-    virtual void connection_write_async(
+    void connection_write_async(
         std::int32_t connection_id,
         const void * buffer,
         std::size_t length,
@@ -59,30 +72,36 @@ public:
     );
 
     // Asynchronously close a connection
-    virtual void connection_close_async(
+    void connection_close_async(
         std::int32_t connection_id,
         std::function<void(const std::string &)> handler
     );
 
     // Asynchronously begin listening
-    virtual void listen_async(
+    void listen_async(
         const std::string & path,
         std::function<void(std::int32_t, const std::string &)> handler
     );
 
     // Asynchronously accept a connection
-    virtual void listener_accept_async(
+    void listener_accept_async(
         std::int32_t listener_id,
         std::function<void(std::int32_t, const std::string &)> handler
     );
 
     // Asynchronously close a listener
-    virtual void listener_close_async(
+    void listener_close_async(
         std::int32_t listener_id,
         std::function<void(const std::string &)> handler
     );
 
 private:
+
+    // The underlying I/O service
+    asio::io_service _io_service;
+
+    // The thread which pumps the underlying I/O service
+    std::thread _io_service_pump;
 
     // Lock for connection/listener ids/maps
     std::mutex _lock;
@@ -114,4 +133,4 @@ private:
 } // namespace gib
 
 
-#endif // GIB_CONNECTION_MANAGER_POSIX_H
+#endif // POSIX_IPC_CONNECTION_MANAGER_H

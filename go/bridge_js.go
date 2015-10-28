@@ -1,6 +1,6 @@
 // +build js
 
-package gib
+package ipc
 
 // ConnectResult represents the result from a connect operation.
 type ConnectResult struct {

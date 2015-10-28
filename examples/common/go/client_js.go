@@ -6,14 +6,14 @@ import (
 )
 
 // GopherJSIPCBridge imports
-import gib "github.com/havoc-io/gopherjsipcbridge/go"
+import ipc "github.com/havoc-io/gopherjsipcbridge/go"
 
 func main() {
 	// Print some information
 	fmt.Println("Initializing GopherJS side of bridge...")
 
 	// Start the initialization sequence
-	controlChannel := gib.ClientInitialize()
+	controlChannel := ipc.ClientInitialize()
 
 	// Wait for the initialization message to come from the control channel.
 	// This should indicate that the server is up and running.
@@ -22,7 +22,7 @@ func main() {
 	
 	// Request that a connection be create
 	fmt.Println("Connecting to IPC path:", ipcPath)
-	connection, err := gib.DialIPC(ipcPath)
+	connection, err := ipc.DialIPC(ipcPath)
 	if err != nil {
 		fmt.Println("error: IPC connection failed:", err)
 	}

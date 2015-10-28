@@ -7,7 +7,7 @@ import (
 )
 
 // GopherJSIPCBridge imports
-import gib "github.com/havoc-io/gopherjsipcbridge/go"
+import ipc "github.com/havoc-io/gopherjsipcbridge/go"
 
 func main() {
 	// Print some information
@@ -22,7 +22,7 @@ func main() {
 	
 	// Request that a connection be create
 	fmt.Println("Connecting to IPC path:", os.Args[1])
-	connection, err := gib.DialIPC(os.Args[1])
+	connection, err := ipc.DialIPC(os.Args[1])
 	if err != nil {
 		fmt.Println("error: IPC connection failed:", err)
 	}

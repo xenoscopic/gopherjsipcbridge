@@ -9,7 +9,7 @@ import (
 )
 
 // GopherJSIPCBridge imports
-import gib "github.com/havoc-io/gopherjsipcbridge/go"
+import ipc "github.com/havoc-io/gopherjsipcbridge/go"
 
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 
 	// Create a listener
 	fmt.Println("Listening on IPC path:", os.Args[1])
-	listener, err := gib.ListenIPC(os.Args[1])
+	listener, err := ipc.ListenIPC(os.Args[1])
 	if err != nil {
 		fmt.Println("error: IPC listening failed:", err)
 		return

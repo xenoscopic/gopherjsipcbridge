@@ -1,6 +1,6 @@
 // +build js
 
-package gib
+package ipc
 
 // This package provides some common error handling helper routines to be shared
 // among bridge implementations.  Specifically, it provides a simple mechanism

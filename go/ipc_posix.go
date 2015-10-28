@@ -1,6 +1,6 @@
 // +build !windows,!js
 
-package gib
+package ipc
 
 // System imports
 import "net"

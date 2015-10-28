@@ -1,4 +1,4 @@
-#include "gib_connection_manager_posix.h"
+#include "posix_ipc_connection_manager.h"
 
 // Standard includes
 #include <stdexcept>
@@ -7,40 +7,49 @@
 #include <unistd.h>
 
 
-gib::ConnectionManagerPosix::ConnectionManagerPosix() : ConnectionManager(),
+gib::POSIXIPCConnectionManager::POSIXIPCConnectionManager() :
+_io_service(),
+_io_service_pump([this]() {
+    // Create a work object to keep the I/O service loop from exiting when there
+    // are no pending requests
+    asio::io_service::work idle(_io_service);
+
+    // Process I/O requests
+    _io_service.run();
+}),
 _next_connection_id(0),
 _next_listener_id(0) {
 
 }
 
 
-gib::ConnectionManagerPosix::~ConnectionManagerPosix() {
+gib::POSIXIPCConnectionManager::~POSIXIPCConnectionManager() {
+    // Cancel the run loop being executed in the pump thread (this cancels the
+    // work object, allowing the run() call to return)
+    _io_service.stop();
+
+    // Wait for the pump thread to die.  After this, no more handlers will be
+    // invoked.
+    _io_service_pump.join();
+
     // Upon destruction, listeners will automatically be closed, but their
     // filesystem endpoints won't automatically be removed by Asio.  We remove
     // these in listener_close_async, but we also want to accomodate users that
     // rely on RAII to clean up these paths.
 
-    // Lock the maps
-    // NOTE: I don't think we actually need to acquire a map lock in here, but
-    // there could conceivably still be outstanding handlers that won't stop
-    // until the parent destructor executes, and those handlers could
-    // conceivably have pointers to call into this object.  Although that would
-    // represent exceptionally bad memory management on the part of the user,
-    // it's better for us to just play it safe.
-    std::lock_guard<std::mutex> lock(_lock);
-
-    // Close all listeners automatically by destructing them
+    // Close all listeners automatically by destructing them (we do this
+    // manually only so we can remove their endpoints - we let connections be
+    // closed when their map destructs)
     _listeners.clear();
 
     // Iterate over endpoint paths and remove them from disk and the map
     for (auto&& endpoint : _listener_endpoints) {
         unlink(endpoint.second.c_str());
     }
-    _listener_endpoints.clear();
 }
 
 
-void gib::ConnectionManagerPosix::connect_async(
+void gib::POSIXIPCConnectionManager::connect_async(
     const std::string & path,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
@@ -69,6 +78,11 @@ void gib::ConnectionManagerPosix::connect_async(
             // Check for an error
             if (error) {
                 // Lock the maps
+                // NOTE: This is safe to do in our handler because asio
+                // guarantees it never calls handlers from inside the caller
+                // (which in our case already holds the lock and would deadlock
+                // if we tried to lock again).  We could switch to a recursive
+                // mutex, but it's not worth the performance drop.
                 std::lock_guard<std::mutex> lock(_lock);
 
                 // Erase the entry
@@ -87,7 +101,7 @@ void gib::ConnectionManagerPosix::connect_async(
 }
 
 
-void gib::ConnectionManagerPosix::connection_read_async(
+void gib::POSIXIPCConnectionManager::connection_read_async(
     std::int32_t connection_id,
     void * buffer,
     std::size_t length,
@@ -151,7 +165,7 @@ void gib::ConnectionManagerPosix::connection_read_async(
 }
 
 
-void gib::ConnectionManagerPosix::connection_write_async(
+void gib::POSIXIPCConnectionManager::connection_write_async(
     std::int32_t connection_id,
     const void * buffer,
     std::size_t length,
@@ -201,7 +215,7 @@ void gib::ConnectionManagerPosix::connection_write_async(
 }
 
 
-void gib::ConnectionManagerPosix::connection_close_async(
+void gib::POSIXIPCConnectionManager::connection_close_async(
     std::int32_t connection_id,
     std::function<void(const std::string &)> handler
 ) {
@@ -225,7 +239,7 @@ void gib::ConnectionManagerPosix::connection_close_async(
 }
 
 
-void gib::ConnectionManagerPosix::listen_async(
+void gib::POSIXIPCConnectionManager::listen_async(
     const std::string & path,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
@@ -295,7 +309,7 @@ void gib::ConnectionManagerPosix::listen_async(
 }
 
 
-void gib::ConnectionManagerPosix::listener_accept_async(
+void gib::POSIXIPCConnectionManager::listener_accept_async(
     std::int32_t listener_id,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
@@ -335,6 +349,11 @@ void gib::ConnectionManagerPosix::listener_accept_async(
             std::string error_message = "";
             if (error) {
                 // Lock the maps
+                // NOTE: This is safe to do in our handler because asio
+                // guarantees it never calls handlers from inside the caller
+                // (which in our case already holds the lock and would deadlock
+                // if we tried to lock again).  We could switch to a recursive
+                // mutex, but it's not worth the performance drop.
                 std::lock_guard<std::mutex> lock(_lock);
 
                 // Erase the connection
@@ -353,7 +372,7 @@ void gib::ConnectionManagerPosix::listener_accept_async(
 }
 
 
-void gib::ConnectionManagerPosix::listener_close_async(
+void gib::POSIXIPCConnectionManager::listener_close_async(
     std::int32_t listener_id,
     std::function<void(const std::string &)> handler
 ) {
