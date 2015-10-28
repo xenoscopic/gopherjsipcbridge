@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		162229971BE12D31006EA134 /* posix_ipc_connection_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 162229951BE12D31006EA134 /* posix_ipc_connection_manager.cc */; settings = {ASSET_TAGS = (); }; };
+		1622299A1BE12F40006EA134 /* GIBJSContextBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 162229991BE12F40006EA134 /* GIBJSContextBridge.m */; settings = {ASSET_TAGS = (); }; };
 		163DBE391BDBE8CC004ABA29 /* GIBWKWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */; settings = {ASSET_TAGS = (); }; };
 		163DBE3C1BDBF9FB004ABA29 /* GIBWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */; settings = {ASSET_TAGS = (); }; };
 		163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */; settings = {ASSET_TAGS = (); }; };
@@ -26,6 +27,8 @@
 /* Begin PBXFileReference section */
 		162229951BE12D31006EA134 /* posix_ipc_connection_manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = posix_ipc_connection_manager.cc; sourceTree = "<group>"; };
 		162229961BE12D31006EA134 /* posix_ipc_connection_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = posix_ipc_connection_manager.h; sourceTree = "<group>"; };
+		162229981BE12F40006EA134 /* GIBJSContextBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBJSContextBridge.h; sourceTree = "<group>"; };
+		162229991BE12F40006EA134 /* GIBJSContextBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBJSContextBridge.m; sourceTree = "<group>"; };
 		163DBE371BDBE8CC004ABA29 /* GIBWKWebViewBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBWKWebViewBridge.h; sourceTree = "<group>"; };
 		163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBWKWebViewBridge.m; sourceTree = "<group>"; };
 		163DBE3A1BDBF9FB004ABA29 /* GIBWebViewBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBWebViewBridge.h; sourceTree = "<group>"; };
@@ -95,6 +98,8 @@
 		166477F21BDA7FE200EF78DA /* Cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				162229981BE12F40006EA134 /* GIBJSContextBridge.h */,
+				162229991BE12F40006EA134 /* GIBJSContextBridge.m */,
 				163DBE461BDE6F72004ABA29 /* GIBBridge.h */,
 				163DBE471BDE6F72004ABA29 /* GIBBridge.m */,
 				163DBE3A1BDBF9FB004ABA29 /* GIBWebViewBridge.h */,
@@ -244,6 +249,7 @@
 				163DBE391BDBE8CC004ABA29 /* GIBWKWebViewBridge.m in Sources */,
 				162229971BE12D31006EA134 /* posix_ipc_connection_manager.cc in Sources */,
 				163DBE451BDE54DB004ABA29 /* NSData+GIB.m in Sources */,
+				1622299A1BE12F40006EA134 /* GIBJSContextBridge.m in Sources */,
 				16EFEEFF1BD79F3B00C1E7D8 /* main.m in Sources */,
 				163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */,
 				163DBE481BDE6F72004ABA29 /* GIBBridge.m in Sources */,

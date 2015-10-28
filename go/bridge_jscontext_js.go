@@ -14,7 +14,7 @@ import "github.com/gopherjs/gopherjs/js"
 // instances, e.g. raw JSContexts or those found in Cocoa WebViews.
 type JSContextBridge struct {
 	// The host object provided via the JSExport protocol
-	hostObject *js.Object
+	hostProxy *js.Object
 }
 
 func init() {
@@ -22,9 +22,9 @@ func init() {
 	// HostInitialize function with a JSContextBridge
 	js.Global.Set(
 		"_GIBJSContextBridgeInitialize",
-		func(hostObject *js.Object, message *js.Object) {
+		func(hostProxy *js.Object, message *js.Object) {
 			// Create a new JSContextBridge
-			bridge := &JSContextBridge{hostObject: hostObject}
+			bridge := &JSContextBridge{hostProxy: hostProxy}
 
 			// Call HostInitialize
 			HostInitialize(bridge, message.String())
@@ -38,7 +38,7 @@ func (b *JSContextBridge) Connect(endpoint string) chan ConnectResult {
 
 	// Forward the request to the host with a callback it can use to write to
 	// the result channel
-	b.hostObject.Call(
+	b.hostProxy.Call(
 		"connectWithCallback",
 		endpoint,
 		func (connectionId int, errorMessage string) {
@@ -62,7 +62,7 @@ func (b *JSContextBridge) ConnectionRead(
 
 	// Forward the request to the host with a callback it can use to write to
 	// the result channel
-	b.hostObject.Call(
+	b.hostProxy.Call(
 		"connectionReadWithLengthWithCallback",
 		connectionId,
 		length,
@@ -97,7 +97,7 @@ func (b *JSContextBridge) ConnectionWrite(
 
 	// Forward the request to the host with a callback it can use to write to
 	// the result channel
-	b.hostObject.Call(
+	b.hostProxy.Call(
 		"connectionWriteWithDataWithCallback",
 		connectionId,
 		data64,
@@ -121,7 +121,7 @@ func (b *JSContextBridge) ConnectionClose(
 
 	// Forward the request to the host with a callback it can use to write to
 	// the result channel
-	b.hostObject.Call(
+	b.hostProxy.Call(
 		"connectionCloseWithCallback",
 		connectionId,
 		func (errorMessage string) {
@@ -141,7 +141,7 @@ func (b *JSContextBridge) Listen(endpoint string) chan ListenResult {
 
 	// Forward the request to the host with a callback it can use to write to
 	// the result channel
-	b.hostObject.Call(
+	b.hostProxy.Call(
 		"listenWithCallback",
 		endpoint,
 		func (listenerId int, errorMessage string) {
@@ -164,7 +164,7 @@ func (b *JSContextBridge) ListenerAccept(
 
 	// Forward the request to the host with a callback it can use to write to
 	// the result channel
-	b.hostObject.Call(
+	b.hostProxy.Call(
 		"listenerAcceptWithCallback",
 		listenerId,
 		func (connectionId int, errorMessage string) {
@@ -187,7 +187,7 @@ func (b *JSContextBridge) ListenerClose(
 
 	// Forward the request to the host with a callback it can use to write to
 	// the result channel
-	b.hostObject.Call(
+	b.hostProxy.Call(
 		"listenerCloseWithCallback",
 		listenerId,
 		func (errorMessage string) {
