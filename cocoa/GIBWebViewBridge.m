@@ -3,6 +3,160 @@
 // JavaScriptCore imports
 #import <JavaScriptCore/JavaScriptCore.h>
 
+// GopherJS IPC Bridge imports
+#import "GIBConnectionManager.h"
+#import "NSString+GIB.h"
+#import "NSData+GIB.h"
+
+
+@protocol GIBWebViewBridgeProxyExports <JSExport>
+
+@required
+
+// NOTE: All callbacks in this interface are done using JSValue.  According to
+// the JSExport documentation, one should be able to use blocks instead (if all
+// callback block arguments are of supported type), however, this doesn't seem
+// to work.  I don't know if it's because JSExport's documentation is wrong (I
+// suspect this is the case) or because we are trying to pass GopherJS functions
+// as callbacks (which should be fine since they are JavaScript functions).  In
+// any case, using JSValue seems to work fine, so we'll go with that.  Don't
+// waste your time thinking you can make blocks work.
+
+// Bridge method for asynchronously connecting
+- (void)connect:(NSString *)endpoint withCallback:(JSValue *)callback;
+
+// Bridge method for asynchronously reading from a connection
+- (void)connectionRead:(NSNumber *)connectionId
+            withLength:(NSNumber *)length
+          withCallback:(JSValue *)callback;
+
+// Bridge method for asynchronously writing to a connection
+- (void)connectionWrite:(NSNumber *)connectionId
+               withData:(NSString *)data64
+           withCallback:(JSValue *)callback;
+
+// Bridge method for asynchronously closing a connection
+- (void)connectionClose:(NSNumber *)connectionId
+           withCallback:(JSValue *)callback;
+
+// Bridge method for asynchronously starting a listener
+- (void)listen:(NSString *)endpoint withCallback:(JSValue *)callback;
+
+// Bridge method for asynchronously accepting from a listener
+- (void)listenerAccept:(NSNumber *)listenerId withCallback:(JSValue *)callback;
+
+// Bridge method for asynchronously closing a listener
+- (void)listenerClose:(NSNumber *)listenerId withCallback:(JSValue *)callback;
+
+@end
+
+
+@interface GIBWebViewBridgeProxy : NSObject <GIBWebViewBridgeProxyExports>
+
+@property (nonatomic) GIBConnectionManager *connectionManager;
+
+// TODO: If we switch GIBWebViewBridgeProxy to GIBJSContextProxy, allow it to
+// take a dispatch queue and pass it to the connection manager.
+- (instancetype)init;
+
+@end
+
+
+@implementation GIBWebViewBridgeProxy
+
+- (instancetype)init {
+    // Call the superclass initializer
+    if ((self = [super init]) == nil) {
+        return nil;
+    }
+
+    // Create the connection manager
+    self.connectionManager = [[GIBConnectionManager alloc] init];
+
+    // All done
+    return self;
+}
+
+- (void)connect:(NSString *)endpoint withCallback:(JSValue *)callback {
+    // Dispatch the request to the connection manager with a callback adapter
+    [self.connectionManager connectAsync:endpoint
+                                 handler:^(NSNumber *connectionId,
+                                           NSString *error) {
+        [callback callWithArguments:@[connectionId, error]];
+    }];
+}
+
+- (void)connectionRead:(NSNumber *)connectionId
+            withLength:(NSNumber *)length
+          withCallback:(JSValue *)callback {
+    // Dispatch the request to the connection manager with a callback adapter
+    [self.connectionManager
+     connectionReadAsync:connectionId
+                  length:length
+                 handler:^(NSData *data, NSString *error) {
+        // Base64-encode the data
+        NSString *data64 = [data base64EncodedString];
+
+        // Call the callback
+        [callback callWithArguments:@[data64, error]];
+    }];
+}
+
+- (void)connectionWrite:(NSNumber *)connectionId
+               withData:(NSString *)data64
+           withCallback:(JSValue *)callback {
+    // Decode the data
+    NSData *data = [data64 base64DecodeBytes];
+
+    // Dispatch the request to the connection manager with a callback adapter
+    [self.connectionManager connectionWriteAsync:connectionId
+                                            data:data
+                                         handler:^(NSNumber *count,
+                                                   NSString *error) {
+        [callback callWithArguments:@[count, error]];
+    }];
+}
+
+- (void)connectionClose:(NSNumber *)connectionId
+           withCallback:(JSValue *)callback {
+    // Dispatch the request to the connection manager with a callback adapter
+    [self.connectionManager connectionCloseAsync:connectionId
+                                         handler:^(NSString *error) {
+        [callback callWithArguments:@[error]];
+    }];
+}
+
+- (void)listen:(NSString *)endpoint
+  withCallback:(JSValue *)callback {
+    // Dispatch the request to the connection manager with a callback adapter
+    [self.connectionManager listenAsync:endpoint
+                                handler:^(NSNumber *listenerId,
+                                          NSString *error) {
+        [callback callWithArguments:@[listenerId, error]];
+    }];
+}
+
+- (void)listenerAccept:(NSNumber *)listenerId
+          withCallback:(JSValue *)callback {
+    // Dispatch the request to the connection manager with a callback adapter
+    [self.connectionManager listenerAcceptAsync:listenerId
+                                        handler:^(NSNumber *connectionId,
+                                                  NSString *error) {
+        [callback callWithArguments:@[connectionId, error]];
+    }];
+}
+
+- (void)listenerClose:(NSNumber *)listenerId
+         withCallback:(JSValue *)callback {
+    // Dispatch the request to the connection manager with a callback adapter
+    [self.connectionManager listenerCloseAsync:listenerId
+                                       handler:^(NSString *error) {
+        [callback callWithArguments:@[error]];
+    }];
+}
+
+@end
+
 
 @interface GIBWebViewBridge ()
 
@@ -14,17 +168,21 @@
 // JSGlobalContextRef remains alive, the proxy object seems to die, or at least
 // that's my best guess.
 @property (strong, nonatomic) JSContext *jsContext;
+@property (strong, nonatomic) GIBWebViewBridgeProxy *jsProxy;
 
 @end
 
 
 @implementation GIBWebViewBridge
 
-- (instancetype)initWithWebView:(WebView *)webView {
+- (instancetype)initWithWebView:(WebView *)webView
+          initializationMessage:(NSString *)initializationMessage {
     // Call the superclass initializer
     if ((self = [super init]) == nil) {
         return nil;
     }
+
+    // TODO: See if we actually need to retain either of these... I doubt it
 
     // Extract and store the webview's JavaScript context
     // NOTE: See note for this property about strong retention
@@ -32,95 +190,14 @@
         [JSContext
          contextWithJSGlobalContextRef:[[webView mainFrame] globalContext]];
 
-    // Get a weak reference to self to avoid retain cycles
-    __weak GIBBridge *weakSelf = self;
+    // Create our proxy
+    self.jsProxy = [[GIBWebViewBridgeProxy alloc] init];
 
-    // Install connect handler
-    void (^connectHandler)(NSNumber *, NSString *) =
-        ^(NSNumber *sequence, NSString *pathBase64) {
-            [weakSelf _handleConnectRequest:sequence pathBase64:pathBase64];
-        };
-    [self _callPath:@[@"_GIBBridge", @"SetConnectHandler"]
-      withArguments:@[connectHandler]];
-
-    // Install connection read handler
-    void (^connectionReadHandler)(NSNumber *, NSNumber *, NSNumber *) =
-        ^(NSNumber *sequence, NSNumber *connectionId, NSNumber *length) {
-            [weakSelf _handleConnectionReadRequest:sequence
-                                      connectionId:connectionId
-                                            length:length];
-        };
-    [self _callPath:@[@"_GIBBridge", @"SetConnectionReadHandler"]
-      withArguments:@[connectionReadHandler]];
-
-    // Install connection write handler
-    void (^connectionWriteHandler)(NSNumber *, NSNumber *, NSString *) =
-        ^(NSNumber *sequence, NSNumber *connectionId, NSString *dataBase64) {
-            [weakSelf _handleConnectionWriteRequest:sequence
-                                       connectionId:connectionId
-                                         dataBase64:dataBase64];
-        };
-    [self _callPath:@[@"_GIBBridge", @"SetConnectionWriteHandler"]
-      withArguments:@[connectionWriteHandler]];
-
-    // Install connection close handler
-    void (^connectionCloseHandler)(NSNumber *, NSNumber *) =
-        ^(NSNumber *sequence, NSNumber *connectionId) {
-            [weakSelf _handleConnectionCloseRequest:sequence
-                                       connectionId:connectionId];
-        };
-    [self _callPath:@[@"_GIBBridge", @"SetConnectionCloseHandler"]
-      withArguments:@[connectionCloseHandler]];
-
-    // Install listen handler
-    void (^listenHandler)(NSNumber *, NSString *) =
-        ^(NSNumber *sequence, NSString *pathBase64) {
-            [weakSelf _handleListenRequest:sequence pathBase64:pathBase64];
-        };
-    [self _callPath:@[@"_GIBBridge", @"SetListenHandler"]
-      withArguments:@[listenHandler]];
-
-    // Install listener accept handler
-    void (^listenerAcceptHandler)(NSNumber *, NSNumber *) =
-        ^(NSNumber *sequence, NSNumber *listenerId) {
-            [weakSelf _handleListenerAcceptRequest:sequence
-                                        listenerId:listenerId];
-        };
-    [self _callPath:@[@"_GIBBridge", @"SetListenerAcceptHandler"]
-      withArguments:@[listenerAcceptHandler]];
-
-    // Install listener close handler
-    void (^listenerCloseHandler)(NSNumber *, NSNumber *) =
-        ^(NSNumber *sequence, NSNumber *listenerId) {
-            [weakSelf _handleListenerCloseRequest:sequence
-                                       listenerId:listenerId];
-        };
-    [self _callPath:@[@"_GIBBridge", @"SetListenerCloseHandler"]
-      withArguments:@[listenerCloseHandler]];
+    // Install the proxy
+    [self.jsContext[@"_GIBJSContextBridgeInitialize"] callWithArguments:@[self.jsProxy, initializationMessage]];
 
     // All done
     return self;
-}
-
-- (void)_callPath:(NSArray<NSString *> *)path
-    withArguments:(NSArray *)arguments {
-    // Make sure the path isn't empty
-    if (path.count == 0) {
-        [NSException raise:NSInvalidArgumentException
-                    format:@"empty function path"];
-    }
-
-    // Perform all interaction with the context on the main thread
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // Grab the target function
-        JSValue *target = self.jsContext[path[0]];
-        for (NSUInteger i = 1; i < path.count; ++i) {
-            target = target[path[i]];
-        }
-
-        // Invoke the target
-        [target callWithArguments:arguments];
-    });
 }
 
 @end

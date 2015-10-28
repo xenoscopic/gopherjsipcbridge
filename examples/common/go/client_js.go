@@ -13,16 +13,12 @@ func main() {
 	fmt.Println("Initializing GopherJS side of bridge...")
 
 	// Start the initialization sequence
-	controlChannel, err := gib.Initialize()
-	if err != nil {
-		fmt.Println("error: unable to initialize bridge:", err)
-		return
-	}
+	controlChannel := gib.ClientInitialize()
 
 	// Wait for the initialization message to come from the control channel.
 	// This should indicate that the server is up and running.
 	fmt.Println("Waiting for IPC path...")
-	ipcPath := <- controlChannel
+	ipcPath := <-controlChannel
 	
 	// Request that a connection be create
 	fmt.Println("Connecting to IPC path:", ipcPath)

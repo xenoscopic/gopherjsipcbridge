@@ -83,18 +83,15 @@
     self.webViewGoServer = [NSTask launchedTaskWithLaunchPath:serverPath
                                                   arguments:@[socketPath]];
 
-    // Create the bridge
-    self.webViewBridge =
-        [[GIBWebViewBridge alloc] initWithWebView:self.webView];
-
     // HACK: Wait for the server to start up and start listening on the socket
     // path.  In a real application, you'd want to do something a bit more
     // robust, like have the server signal the application.
     // TODO: Fix this
     [NSThread sleepForTimeInterval:1.0];
 
-    // Send the socket path for communication
-    [self.webViewBridge sendMessage:socketPath];
+    // Create the bridge
+    self.webViewBridge = [[GIBWebViewBridge alloc] initWithWebView:self.webView
+                                             initializationMessage:socketPath];
 }
 
 - (IBAction)startWKWebViewExample:(id)sender {

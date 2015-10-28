@@ -6,6 +6,7 @@
 
 @interface GIBConnectionManager ()
 
+@property (strong, nonatomic) dispatch_queue_t dispatchQueue;
 // NOTE: We use a direct pointer that we manually deallocate because using an
 // instance variable to manage lifetime (e.g. a std::unique_ptr) requires that
 // -fobjc-call-cxx-cdtors be passed to the compiler:
@@ -15,13 +16,23 @@
 @end
 
 
+// TODO: We can probably use direct ivar access in here for performance.  Worth
+// testing anyway.
 @implementation GIBConnectionManager
 
 - (instancetype)init {
+    // Call the more general initializer
+    return [self initWithHandlerDispatchQueue:dispatch_get_main_queue()];
+}
+
+- (instancetype)initWithHandlerDispatchQueue:(dispatch_queue_t)dispatchQueue {
     // Call the superclass initializer
     if ((self = [super init]) == nil) {
         return nil;
     }
+
+    // Store the dispatch queue
+    self.dispatchQueue = dispatchQueue;
 
     // Create the connection manager
     self.connectionManager = new gib::ConnectionManagerPosix();
@@ -40,13 +51,21 @@
 
 - (void)connectAsync:(NSString *)path
              handler:(void (^)(NSNumber *, NSString *))handler {
+    // Get dispatch queue
+    dispatch_queue_t queue = self.dispatchQueue;
+
     // Dispatch the request with a wrapper handler
     self.connectionManager->connect_async(
         [path UTF8String],
-        [handler](std::int32_t connectionId, const std::string & error) {
-            // Call the Objective-C handler
-            handler([NSNumber numberWithInt:connectionId],
-                    [NSString stringWithUTF8String:error.c_str()]);
+        [queue, handler](std::int32_t connectionId, const std::string & error) {
+            // Convert the error since it is a reference and may not exist when
+            // the handler is invoked
+            NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
+
+            // Call the Objective-C handler on the main thread
+            dispatch_async(queue, ^{
+                handler([NSNumber numberWithInt:connectionId], errCocoa);
+            });
         }
     );
 }
@@ -60,9 +79,14 @@
 
     // Verify that the allocation succeeded
     if (!buffer) {
-        // Call the Objective-C handler
-        handler([NSData data], @"read buffer allocation failed");
+        // Call the Objective-C handler on the main thread
+        dispatch_async(_dispatchQueue, ^{
+            handler([NSData data], @"read buffer allocation failed");
+        });
     }
+
+    // Get dispatch queue
+    dispatch_queue_t queue = self.dispatchQueue;
 
     // Dispatch the request with a wrapper handler
     // NOTE: We capture the buffer in our handler lambda, both because we
@@ -75,15 +99,21 @@
         [connectionId intValue],
         buffer.mutableBytes,
         buffer.length,
-        [handler, buffer](std::size_t count, const std::string & error) {
+        [queue, handler, buffer](std::size_t count, const std::string & error) {
             // Truncate the buffer to the length read
             [buffer replaceBytesInRange:NSMakeRange(count,
                                                     buffer.length - count)
                               withBytes:NULL
                                  length:0];
 
-            // Call the Objective-C handler
-            handler(buffer, [NSString stringWithUTF8String:error.c_str()]);
+            // Convert the error since it is a reference and may not exist when
+            // the handler is invoked
+            NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
+
+            // Call the Objective-C handler on the main thread
+            dispatch_async(queue, ^{
+                handler(buffer, errCocoa);
+            });
         }
     );
 }
@@ -91,6 +121,9 @@
 - (void)connectionWriteAsync:(NSNumber *)connectionId
                         data:(NSData *)data
                      handler:(void (^)(NSNumber *, NSString *))handler {
+    // Get dispatch queue
+    dispatch_queue_t queue = self.dispatchQueue;
+
     // Dispatch the request with a wrapper handler
     // NOTE: We capture the buffer in our handler lambda, because we need to
     // keep it alive for the duration of the write.  Apparently
@@ -105,60 +138,99 @@
         [connectionId intValue],
         data.bytes,
         data.length,
-        [data, handler](std::size_t count, const std::string & error) {
-            // Call the Objective-C handler
-            handler([NSNumber numberWithUnsignedInteger:count],
-                    [NSString stringWithUTF8String:error.c_str()]);
+        [queue, data, handler](std::size_t count, const std::string & error) {
+            // Convert the error since it is a reference and may not exist when
+            // the handler is invoked
+            NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
+
+            // Call the Objective-C handler on the main thread
+            dispatch_async(queue, ^{
+                handler([NSNumber numberWithUnsignedInteger:count], errCocoa);
+            });
         }
     );
 }
 
 - (void)connectionCloseAsync:(NSNumber *)connectionId
                      handler:(void (^)(NSString *))handler {
+    // Get dispatch queue
+    dispatch_queue_t queue = self.dispatchQueue;
+
     // Dispatch the request with a wrapper handler
     self.connectionManager->connection_close_async(
         [connectionId intValue],
-        [handler](const std::string & error) {
-            // Call the Objective-C handler
-            handler([NSString stringWithUTF8String:error.c_str()]);
+        [queue, handler](const std::string & error) {
+            // Convert the error since it is a reference and may not exist when
+            // the handler is invoked
+            NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
+
+            // Call the Objective-C handler on the main thread
+            dispatch_async(queue, ^{
+                handler(errCocoa);
+            });
         }
     );
 }
 
 - (void)listenAsync:(NSString *)path
             handler:(void (^)(NSNumber *, NSString *))handler {
+    // Get dispatch queue
+    dispatch_queue_t queue = self.dispatchQueue;
+
     // Dispatch the request with a wrapper handler
     self.connectionManager->listen_async(
         [path UTF8String],
-        [handler](std::int32_t listenerId, const std::string & error) {
-            // Call the Objective-C handler
-            handler([NSNumber numberWithInt:listenerId],
-                    [NSString stringWithUTF8String:error.c_str()]);
+        [queue, handler](std::int32_t listenerId, const std::string & error) {
+            // Convert the error since it is a reference and may not exist when
+            // the handler is invoked
+            NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
+
+            // Call the Objective-C handler on the main thread
+            dispatch_async(queue, ^{
+                handler([NSNumber numberWithInt:listenerId], errCocoa);
+            });
         }
     );
 }
 
 - (void)listenerAcceptAsync:(NSNumber *)listenerId
                     handler:(void (^)(NSNumber *, NSString *))handler {
+    // Get dispatch queue
+    dispatch_queue_t queue = self.dispatchQueue;
+
     // Dispatch the request with a wrapper handler
     self.connectionManager->listener_accept_async(
         [listenerId intValue],
-        [handler](std::int32_t connectionId, const std::string & error) {
-            // Call the Objective-C handler
-            handler([NSNumber numberWithInt:connectionId],
-                    [NSString stringWithUTF8String:error.c_str()]);
+        [queue, handler](std::int32_t connectionId, const std::string & error) {
+            // Convert the error since it is a reference and may not exist when
+            // the handler is invoked
+            NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
+
+            // Call the Objective-C handler on the main thread
+            dispatch_async(queue, ^{
+                handler([NSNumber numberWithInt:connectionId], errCocoa);
+            });
         }
     );
 }
 
 - (void)listenerCloseAsync:(NSNumber *)listenerId
                    handler:(void (^)(NSString *))handler {
+    // Get dispatch queue
+    dispatch_queue_t queue = self.dispatchQueue;
+
     // Dispatch the request with a wrapper handler
     self.connectionManager->listener_close_async(
         [listenerId intValue],
-        [handler](const std::string & error) {
-            // Call the Objective-C handler
-            handler([NSString stringWithUTF8String:error.c_str()]);
+        [queue, handler](const std::string & error) {
+            // Convert the error since it is a reference and may not exist when
+            // the handler is invoked
+            NSString *errCocoa = [NSString stringWithUTF8String:error.c_str()];
+
+            // Call the Objective-C handler on the main thread
+            dispatch_async(queue, ^{
+                handler(errCocoa);
+            });
         }
     );
 }

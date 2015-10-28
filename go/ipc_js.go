@@ -11,7 +11,7 @@ import (
 
 // ipcAddr implements the net.Addr interface for GopherJS IPC connections.
 type ipcAddr struct {
-	path string
+	endpoint string
 }
 
 func (*ipcAddr) Network() string {
@@ -19,7 +19,7 @@ func (*ipcAddr) Network() string {
 }
 
 func (a *ipcAddr) String() string {
-	return a.path
+	return a.endpoint
 }
 
 // ipcConn implements the net.Conn interface for GopherJS IPC connections.
@@ -29,24 +29,39 @@ type ipcConn struct {
 }
 
 func (c *ipcConn) Read(b []byte) (int, error) {
-	// Read through the bridge
-	buffer, err := bridge.connectionRead(c.connectionId, len(b))
+	// Dispatch the request through the bridge
+	resultChannel := global.bridge.ConnectionRead(c.connectionId, len(b))
+
+	// Wait for the result
+	result := <-resultChannel
 
 	// We always copy the resultant bytes, regardless of errors
-	copy(b, buffer)
+	copy(b, result.data)
 
 	// All done
-	return len(buffer), err
+	return len(result.data), result.err
 }
 
 func (c *ipcConn) Write(b []byte) (int, error) {
-	// Write through the bridge
-	return bridge.connectionWrite(c.connectionId, b)
+	// Dispatch the request through the bridge
+	resultChannel := global.bridge.ConnectionWrite(c.connectionId, b)
+
+	// Wait for the result
+	result := <-resultChannel
+
+	// All done
+	return result.count, result.err
 }
 
 func (c *ipcConn) Close() error {
-	// Close through the bridge
-	return bridge.connectionClose(c.connectionId)
+	// Dispatch the request through the bridge
+	resultChannel := global.bridge.ConnectionClose(c.connectionId)
+
+	// Wait for the result
+	result := <-resultChannel
+
+	// All done
+	return result.err
 }
 
 func (c *ipcConn) LocalAddr() net.Addr {
@@ -82,21 +97,26 @@ func (c *ipcConn) SetWriteDeadline(t time.Time) error {
 }
 
 // DialIPC establishes a new GopherJS IPC connection.  On POSIX systems, this is
-// done using Unix domain sockets, and the path argument should be the path of
-// an existing Unix domain socket endpoint to connect to.  On Windows systems,
-// this is done using named pipes, and the path argument should be the name of
-// an existing named pipe endpoint to connect to.
-func DialIPC(path string) (net.Conn, error) {
-	// Connect through the bridge
-	connectionId, err := bridge.connect(path)
-	if err != nil {
-		return nil, err
+// done using Unix domain sockets, and the endpoint argument should be the path
+// of an existing Unix domain socket endpoint to connect to.  On Windows
+// systems, this is done using named pipes, and the endpoint argument should be
+// the name of an existing named pipe endpoint to connect to.
+func DialIPC(endpoint string) (net.Conn, error) {
+	// Dispatch the request through the bridge
+	resultChannel := global.bridge.Connect(endpoint)
+
+	// Wait for the result
+	result := <-resultChannel
+
+	// Watch for errors
+	if result.err != nil {
+		return nil, result.err
 	}
 
 	// All done
 	return &ipcConn{
-		address: &ipcAddr{path: path},
-		connectionId: connectionId,
+		address: &ipcAddr{endpoint: endpoint},
+		connectionId: result.connectionId,
 	}, nil
 }
 
@@ -107,19 +127,33 @@ type ipcListener struct {
 }
 
 func (l *ipcListener) Accept() (net.Conn, error) {
-	// Accept over the bridge
-	connectionId, err := bridge.listenerAccept(l.listenerId)
-	if err != nil {
-		return nil, err
+	// Dispatch the request through the bridge
+	resultChannel := global.bridge.ListenerAccept(l.listenerId)
+
+	// Wait for the result
+	result := <-resultChannel
+
+	// Watch for errors
+	if result.err != nil {
+		return nil, result.err
 	}
 
 	// All done
-	return &ipcConn{address: l.address, connectionId: connectionId}, nil
+	return &ipcConn{
+		address: l.address,
+		connectionId: result.connectionId,
+	}, nil
 }
 
 func (l *ipcListener) Close() error {
-	// Close through the bridge
-	return bridge.listenerClose(l.listenerId)
+	// Dispatch the request through the bridge
+	resultChannel := global.bridge.ConnectionClose(l.listenerId)
+
+	// Wait for the result
+	result := <-resultChannel
+
+	// All done
+	return result.err
 }
 
 func (l *ipcListener) Addr() net.Addr {
@@ -127,21 +161,26 @@ func (l *ipcListener) Addr() net.Addr {
 }
 
 // ListenIPC establishes a new IPC connection listener.  On POSIX systems, this
-// is done using Unix domain sockets, and the path argument should be the path
-// at which to create the endpoint.  The path should not be bound to an existing
-// listener.  On Windows systems, this is done using named pipes, and the path
-// argument should be the name of a named pipe at which to create the endpoint.
-// The name should not be bound to an existing listener.
-func ListenIPC(path string) (net.Listener, error) {
-	// Listen through the bridge
-	listenerId, err := bridge.listen(path)
-	if err != nil {
-		return nil, err
+// is done using Unix domain sockets, and the endpoint argument should be the
+// path at which to create the endpoint.  The path should not be bound to an
+// existing listener.  On Windows systems, this is done using named pipes, and
+// the endpoint argument should be the name of a named pipe at which to create
+// the endpoint.  The name should not be bound to an existing listener.
+func ListenIPC(endpoint string) (net.Listener, error) {
+	// Dispatch the request through the bridge
+	resultChannel := global.bridge.Listen(endpoint)
+
+	// Wait for the result
+	result := <-resultChannel
+
+	// Watch for errors
+	if result.err != nil {
+		return nil, result.err
 	}
 
 	// All done
 	return &ipcListener{
-		address: &ipcAddr{path: path},
-		listenerId: listenerId,
+		address: &ipcAddr{endpoint: endpoint},
+		listenerId: result.listenerId,
 	}, nil
 }

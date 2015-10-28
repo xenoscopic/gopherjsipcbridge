@@ -4,12 +4,10 @@
 // WebKit imports
 #import <WebKit/WebKit.h>
 
-// GopherJSIPCBridge imports
-#import "GIBBridge.h"
 
+@interface GIBWebViewBridge : NSObject
 
-@interface GIBWebViewBridge : GIBBridge
-
-- (instancetype)initWithWebView:(WebView *)webView;
+- (instancetype)initWithWebView:(WebView *)webView
+          initializationMessage:(NSString *)initializationMessage;
 
 @end
