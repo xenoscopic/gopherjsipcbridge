@@ -130,18 +130,16 @@ didFinishNavigation:(WKNavigation *)navigation {
     self.webViewGoServer = [NSTask launchedTaskWithLaunchPath:serverPath
                                                   arguments:@[socketPath]];
 
-    // Create the bridge
-    self.wkWebViewBridge =
-        [[GIBWKWebViewBridge alloc] initWithWKWebView:self.wkWebView];
-
     // HACK: Wait for the server to start up and start listening on the socket
     // path.  In a real application, you'd want to do something a bit more
     // robust, like have the server signal the application.
     // TODO: Fix this
     [NSThread sleepForTimeInterval:1.0];
 
-    // Send the socket path for communication
-    [self.wkWebViewBridge sendMessage:socketPath];
+    // Create the bridge
+    self.wkWebViewBridge =
+        [[GIBWKWebViewBridge alloc] initWithWKWebView:self.wkWebView
+                                initializationMessage:socketPath];
 }
 
 - (IBAction)startRawGoExample:(id)sender {

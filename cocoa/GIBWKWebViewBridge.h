@@ -4,18 +4,13 @@
 // WebKit imports
 #import <WebKit/WebKit.h>
 
-// GopherJSIPCBridge imports
-#import "GIBBridge.h"
 
+@interface GIBWKWebViewBridge : NSObject <WKScriptMessageHandler>
 
-@interface GIBWKWebViewBridge : GIBBridge <WKScriptMessageHandler>
-
-- (instancetype)initWithWKWebView:(WKWebView *)webView;
-
-// The GIBWKWebViewBridge installs message handlers into the WKWebView instance.
-// Unfortunately this means that the WKWebView strongly retains the
-// GIBWKWebViewBridge.  This removes those handlers, allowing the bridge to be
-// released.
-- (void)shutdown;
+// Designated initializer.  Creates a new GIBWKWebViewBridge connected to the
+// specified web view.  The initialization message will be sent to the
+// initialization control channel in GopherJS.
+- (instancetype)initWithWKWebView:(WKWebView *)webView
+            initializationMessage:(NSString *)initializationMessage;
 
 @end

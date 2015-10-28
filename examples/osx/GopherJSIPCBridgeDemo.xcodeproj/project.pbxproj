@@ -14,8 +14,6 @@
 		163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */; settings = {ASSET_TAGS = (); }; };
 		163DBE421BDD86FA004ABA29 /* NSString+GIB.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE411BDD86FA004ABA29 /* NSString+GIB.m */; settings = {ASSET_TAGS = (); }; };
 		163DBE451BDE54DB004ABA29 /* NSData+GIB.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE441BDE54DB004ABA29 /* NSData+GIB.m */; settings = {ASSET_TAGS = (); }; };
-		163DBE481BDE6F72004ABA29 /* GIBBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE471BDE6F72004ABA29 /* GIBBridge.m */; settings = {ASSET_TAGS = (); }; };
-		163DBE4A1BDF9D48004ABA29 /* GIBWKWebViewBridge.js in Resources */ = {isa = PBXBuildFile; fileRef = 163DBE491BDF9D48004ABA29 /* GIBWKWebViewBridge.js */; settings = {ASSET_TAGS = (); }; };
 		164F3AC91BD81F3500C2E92A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 164F3AC81BD81F3500C2E92A /* WebKit.framework */; };
 		165FEE131BDAC9610053E67F /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 165FEE121BDAC9610053E67F /* JavaScriptCore.framework */; };
 		16EFEEFC1BD79F3B00C1E7D8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 16EFEEFB1BD79F3B00C1E7D8 /* AppDelegate.m */; };
@@ -39,9 +37,6 @@
 		163DBE411BDD86FA004ABA29 /* NSString+GIB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+GIB.m"; sourceTree = "<group>"; };
 		163DBE431BDE54DB004ABA29 /* NSData+GIB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GIB.h"; sourceTree = "<group>"; };
 		163DBE441BDE54DB004ABA29 /* NSData+GIB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GIB.m"; sourceTree = "<group>"; };
-		163DBE461BDE6F72004ABA29 /* GIBBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBBridge.h; sourceTree = "<group>"; };
-		163DBE471BDE6F72004ABA29 /* GIBBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBBridge.m; sourceTree = "<group>"; };
-		163DBE491BDF9D48004ABA29 /* GIBWKWebViewBridge.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = GIBWKWebViewBridge.js; sourceTree = "<group>"; };
 		164F3AC81BD81F3500C2E92A /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		165FEE121BDAC9610053E67F /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		16EFEEF71BD79F3B00C1E7D8 /* GopherJSIPCBridgeDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GopherJSIPCBridgeDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,13 +95,10 @@
 			children = (
 				162229981BE12F40006EA134 /* GIBJSContextBridge.h */,
 				162229991BE12F40006EA134 /* GIBJSContextBridge.m */,
-				163DBE461BDE6F72004ABA29 /* GIBBridge.h */,
-				163DBE471BDE6F72004ABA29 /* GIBBridge.m */,
 				163DBE3A1BDBF9FB004ABA29 /* GIBWebViewBridge.h */,
 				163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */,
 				163DBE371BDBE8CC004ABA29 /* GIBWKWebViewBridge.h */,
 				163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */,
-				163DBE491BDF9D48004ABA29 /* GIBWKWebViewBridge.js */,
 				163DBE3D1BDD330F004ABA29 /* GIBConnectionManager.h */,
 				163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */,
 				163DBE431BDE54DB004ABA29 /* NSData+GIB.h */,
@@ -215,7 +207,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				163DBE4A1BDF9D48004ABA29 /* GIBWKWebViewBridge.js in Resources */,
 				16EFEF011BD79F3B00C1E7D8 /* Assets.xcassets in Resources */,
 				16EFEF041BD79F3B00C1E7D8 /* MainMenu.xib in Resources */,
 			);
@@ -252,7 +243,6 @@
 				1622299A1BE12F40006EA134 /* GIBJSContextBridge.m in Sources */,
 				16EFEEFF1BD79F3B00C1E7D8 /* main.m in Sources */,
 				163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */,
-				163DBE481BDE6F72004ABA29 /* GIBBridge.m in Sources */,
 				163DBE421BDD86FA004ABA29 /* NSString+GIB.m in Sources */,
 				16EFEEFC1BD79F3B00C1E7D8 /* AppDelegate.m in Sources */,
 			);
