@@ -1,8 +1,5 @@
 using System;
 using System.Security.Permissions;
-using System.Collections.Generic;
-using System.IO.Pipes;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GopherJSIPCBridge
@@ -140,41 +137,74 @@ namespace GopherJSIPCBridge
             );
         }
 
-        // Method for asynchronously closing a connection
+        // Method for closing a connection
         public void ConnectionClose(int connectionId, int sequence)
         {
-            // Forward the request to the connection manager with an appropriate
-            // continuation
-            _connectionManager.ConnectionCloseAsync(
-                connectionId
-            ).ContinueWith(
-                (task) =>
-                {
-                    // Do the response invocation on the main thread
-                    invokeOnMainThread(
-                        "_GIBWebBrowserBridgeRespondConnectionClose",
-                        new object[] { sequence, task.Result }
-                    );
+            // Use the connection manager to close the request and then forward
+            // the result back across the bridge.  We don't need to use the
+            // invoke machinery since we're already on the main thread, but we
+            // use the method to keep code uniform.
+            invokeOnMainThread(
+                "_GIBWebBrowserBridgeRespondConnectionClose",
+                new object[] {
+                    sequence,
+                    _connectionManager.ConnectionClose(connectionId)
                 }
             );
         }
 
-        // Method for asynchronously starting a listener
+        // Method for starting a listener
         public void Listen(string endpoint, int sequence)
         {
-            // TODO: Implement
+            // Use the connection manager to listen and then forward the result
+            // back across the bridge.  We don't need to use the invoke
+            // machinery since we're already on the main thread, but we use the
+            // method to keep code uniform.
+            Tuple<Int32, string> result = _connectionManager.Listen(endpoint);
+            invokeOnMainThread(
+                "_GIBWebBrowserBridgeRespondListen",
+                new object[] {
+                    sequence,
+                    result.Item1,
+                    result.Item2
+                }
+            );
         }
 
         // Method for asynchronously accepting from a listener
         public void ListenerAccept(int listenerId, int sequence)
         {
-            // TODO: Implement
+            // Forward the request to the connection manager with an appropriate
+            // continuation
+            _connectionManager.ListenerAcceptAsync(listenerId).ContinueWith(
+                (task) =>
+                {
+                    // Extract the result
+                    var result = task.Result;
+
+                    // Do the response invocation on the main thread
+                    invokeOnMainThread(
+                        "_GIBWebBrowserBridgeRespondListenerAccept",
+                        new object[] { sequence, result.Item1, result.Item2 }
+                    );
+                }
+            );
         }
 
         // Method for asynchronously closing a listener
         public void ListenerClose(int listenerId, int sequence)
         {
-            // TODO: Implement
+            // Use the connection manager to close the listener and then forward
+            // the result back across the bridge.  We don't need to use the
+            // invoke machinery since we're already on the main thread, but we
+            // use the method to keep code uniform.
+            invokeOnMainThread(
+                "_GIBWebBrowserBridgeRespondListenerClose",
+                new object[] {
+                    sequence,
+                    _connectionManager.ConnectionClose(listenerId)
+                }
+            );
         }
     }
 }

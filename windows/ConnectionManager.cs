@@ -20,7 +20,7 @@ namespace GopherJSIPCBridge
 
         // Map from listener id to named pipe name.  A new NamedPipeServerStream
         // has to be created for each accept call, so we simply store the
-        // endpoint here.
+        // endpoint's name (i.e. NAME in \\server\pipe\NAME).
         private Dictionary<Int32, string> _listeners;
 
         // Constructor
@@ -58,38 +58,31 @@ namespace GopherJSIPCBridge
                 PipeOptions.Asynchronous
             );
 
+            // Try to connect asynchronously
+            try
+            {
+                await connection.ConnectAsync();
+            }
+            catch (Exception e)
+            {
+                return Tuple.Create(-1, e.Message);
+            }
+
             // Store the connection
             Int32 connectionId = -1;
             lock (this)
             {
-                // Compute the next connection id.  Just to be paranoid, make
-                // sure we don't overflow the maximum value, because we use -1
-                // as the invalid identifier.
+                // Compute the next connection id.  Watch for overflow, because
+                // we use -1 as the invalid identifier.
                 if (_nextConnectionId < 0)
                 {
+                    connection.Close();
                     return Tuple.Create(-1, "connection ids exhausted");
                 }
                 connectionId = _nextConnectionId++;
 
                 // Do the storage
                 _connections[connectionId] = connection;
-            }
-
-            // Connect asynchronously
-            try
-            {
-                await connection.ConnectAsync();
-            }
-            catch(Exception e)
-            {
-                // If there was an error, remove the connection
-                lock (this)
-                {
-                    _connections.Remove(connectionId);
-                }
-
-                // Bail
-                return Tuple.Create(-1, e.Message);
             }
 
             // All done
@@ -200,23 +193,19 @@ namespace GopherJSIPCBridge
             return Tuple.Create(buffer.Length, "");
         }
 
-        // Asynchronously close a connection
-        public async Task<string> ConnectionCloseAsync(Int32 connectionId)
+        // Synchronously (but instantly) close a connection
+        public string ConnectionClose(Int32 connectionId)
         {
-            // Get the connection
-            PipeStream connection = null;
+            // Make close/removal atomic
             lock (this)
             {
+                // Get the connection
+                PipeStream connection = null;
                 if (!_connections.TryGetValue(connectionId, out connection))
                 {
                     return "invalid connection id";
                 }
-            }
 
-            // Close the connection.  There is no asynchronous method for doing
-            // this, so we have to emulate it.
-            string result = await Task.Run(() =>
-            {
                 // Try to close the connection
                 try
                 {
@@ -227,23 +216,121 @@ namespace GopherJSIPCBridge
                     return e.Message;
                 }
 
-                // Success
-                return "";
-            });
-
-            // Remove it from the map if we were successful
-            if (result == "")
-            {
-                lock (this)
-                {
-                    _connections.Remove(connectionId);
-                }
+                // Remove it from the map if we were successful
+                _connections.Remove(connectionId);
             }
 
             // All done
-            return result;
+            return "";
         }
 
-        // TODO: Implement listener methods
+        // Synchronously (but instantly) create a new listener
+        public Tuple<Int32, string> Listen(string endpoint)
+        {
+            // Parse the endpoint.  It should be formatted as
+            // "\\server\pipe\name".
+            string[] components = endpoint.Split(new char[] { '\\' });
+            if (components.Length != 5)
+            {
+                return Tuple.Create(-1, "invalid endpoint format");
+            }
+
+            // Store the "listener"
+            Int32 listenerId = -1;
+            lock (this)
+            {
+                // Compute the next listener id.  Watch for overflow, because we
+                // use -1 as the invalid identifier.
+                if (_nextListenerId < 0)
+                {
+                    return Tuple.Create(-1, "listener ids exhausted");
+                }
+                listenerId = _nextListenerId++;
+
+                // Do the storage
+                _listeners[listenerId] = components[4];
+            }
+
+            // All done
+            return Tuple.Create(listenerId, "");
+        }
+
+        public async Task<Tuple<Int32, string>> ListenerAcceptAsync(
+            int listenerId
+        )
+        {
+            // Get the listener (which is just a pipe name)
+            // TODO: I guess that technically we should do some sort of check to
+            // make sure that no connections are being accepted on this
+            // endpoint.  Perhaps change listener map to add cancellation token?
+            string pipeName = null;
+            lock (this)
+            {
+                if (!_listeners.TryGetValue(listenerId, out pipeName))
+                {
+                    return Tuple.Create(0, "invalid listener id");
+                }
+            }
+
+            // Create the connection
+            // NOTE: It is essential that the PipeOptions.Asynchronous option be
+            // specified, or the ReadAsync and WriteAsync methods will block
+            // (and I don't mean they'll call await and halt - I mean they'll
+            // never return a Task object)
+            var connection = new NamedPipeServerStream(
+                pipeName,
+                PipeDirection.InOut,
+                NamedPipeServerStream.MaxAllowedServerInstances,
+                PipeTransmissionMode.Byte,
+                PipeOptions.Asynchronous
+            );
+
+            // Try to accept a connection asynchronously
+            try
+            {
+                await connection.WaitForConnectionAsync();
+            }
+            catch (Exception e)
+            {
+                return Tuple.Create(-1, e.Message);
+            }
+
+            // Store the connection
+            Int32 connectionId = -1;
+            lock (this)
+            {
+                // Compute the next connection id.  Watch for overflow, because
+                // we use -1 as the invalid identifier.
+                if (_nextConnectionId < 0)
+                {
+                    connection.Close();
+                    return Tuple.Create(-1, "connection ids exhausted");
+                }
+                connectionId = _nextConnectionId++;
+
+                // Do the storage
+                _connections[connectionId] = connection;
+            }
+
+            // All done
+            return Tuple.Create(connectionId, "");
+        }
+
+        // Synchronously (but instantly) close a connection
+        public string ConnectionListener(Int32 listenerId)
+        {
+            // Make removal atomic
+            lock (this)
+            {
+                // TODO: I guess that technically we should do some sort of
+                // check to make sure that no connections are being accepted on
+                // this endpoint, or cancel any that are.  Perhaps change
+                // listener map to add cancellation token?
+                _listeners.Remove(listenerId);
+            }
+
+            // All done
+            return "";
+        }
     }
 }
