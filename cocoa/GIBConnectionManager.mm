@@ -49,14 +49,14 @@
     delete self.connectionManager;
 }
 
-- (void)connectAsync:(NSString *)path
+- (void)connectAsync:(NSString *)endpoint
              handler:(void (^)(NSNumber *, NSString *))handler {
     // Get dispatch queue
     dispatch_queue_t queue = self.dispatchQueue;
 
     // Dispatch the request with a wrapper handler
     self.connectionManager->connect_async(
-        [path UTF8String],
+        [endpoint UTF8String],
         [queue, handler](std::int32_t connectionId, const std::string & error) {
             // Convert the error since it is a reference and may not exist when
             // the handler is invoked
@@ -175,14 +175,14 @@
     );
 }
 
-- (void)listenAsync:(NSString *)path
+- (void)listenAsync:(NSString *)endpoint
             handler:(void (^)(NSNumber *, NSString *))handler {
     // Get dispatch queue
     dispatch_queue_t queue = self.dispatchQueue;
 
     // Dispatch the request with a wrapper handler
     self.connectionManager->listen_async(
-        [path UTF8String],
+        [endpoint UTF8String],
         [queue, handler](std::int32_t listenerId, const std::string & error) {
             // Convert the error since it is a reference and may not exist when
             // the handler is invoked

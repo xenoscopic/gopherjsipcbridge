@@ -18,7 +18,7 @@
 - (instancetype)initWithHandlerDispatchQueue:(dispatch_queue_t)dispatchQueue;
 
 // Asynchronously create a new connection
-- (void)connectAsync:(NSString *)path
+- (void)connectAsync:(NSString *)endpoint
              handler:(void (^)(NSNumber *, NSString *))handler;
 
 // Asynchronously read from a connection
@@ -36,7 +36,7 @@
                      handler:(void (^)(NSString *))handler;
 
 // Asynchronously begin listening
-- (void)listenAsync:(NSString *)path
+- (void)listenAsync:(NSString *)endpoint
             handler:(void (^)(NSNumber *, NSString *))handler;
 
 // Asynchronously accept a connection

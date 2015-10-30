@@ -50,7 +50,7 @@ gib::IPCConnectionManager::~IPCConnectionManager() {
 
 
 void gib::IPCConnectionManager::connect_async(
-    const std::string & path,
+    const std::string & endpoint,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
     // Lock the maps
@@ -80,7 +80,7 @@ void gib::IPCConnectionManager::connect_async(
 
     // Connect asynchronously
     _connections.find(connection_id)->second.async_connect(
-        asio::local::stream_protocol::endpoint(path),
+        asio::local::stream_protocol::endpoint(endpoint),
         [this, connection_id, handler](const asio::error_code & error) {
             // Check for an error
             if (error) {
@@ -247,7 +247,7 @@ void gib::IPCConnectionManager::connection_close_async(
 
 
 void gib::IPCConnectionManager::listen_async(
-    const std::string & path,
+    const std::string & endpoint,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
     // Lock the maps
@@ -268,7 +268,7 @@ void gib::IPCConnectionManager::listen_async(
         opened = true;
 
         // Bind the listener
-        listener.bind(asio::local::stream_protocol::endpoint(path));
+        listener.bind(asio::local::stream_protocol::endpoint(endpoint));
         bound = true;
 
         // Start listening
@@ -282,7 +282,7 @@ void gib::IPCConnectionManager::listen_async(
         // Remove its endpoint if it is bound (if it isn't bound, it may have
         // failed because it is in use by another process)
         if (bound) {
-            unlink(path.c_str());
+            unlink(endpoint.c_str());
         }
 
         // Notify the handler
@@ -296,7 +296,7 @@ void gib::IPCConnectionManager::listen_async(
     // overflow the maximum value, because we use -1 as the invalid identifier.
     if (_next_listener_id < 0) {
         listener.close();
-        unlink(path.c_str());
+        unlink(endpoint.c_str());
         handler(-1, "listener ids exhausted");
         return;
     }
@@ -310,7 +310,7 @@ void gib::IPCConnectionManager::listen_async(
     );
 
     // Store the endpoint for later cleanup
-    _listener_endpoints[listener_id] = path;
+    _listener_endpoints[listener_id] = endpoint;
 
     // Notify the handler
     handler(listener_id, "");

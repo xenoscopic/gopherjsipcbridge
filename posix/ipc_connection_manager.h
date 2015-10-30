@@ -45,7 +45,7 @@ public:
 
     // Asynchronously create a new connection
     void connect_async(
-        const std::string & path,
+        const std::string & endpoint,
         std::function<void(std::int32_t, const std::string &)> handler
     );
 
@@ -77,7 +77,7 @@ public:
 
     // Asynchronously begin listening
     void listen_async(
-        const std::string & path,
+        const std::string & endpoint,
         std::function<void(std::int32_t, const std::string &)> handler
     );
 
