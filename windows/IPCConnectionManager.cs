@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GopherJSIPCBridge
 {
-    public class ConnectionManager
+    public class IPCConnectionManager
     {
         // The next connection id
         private Int32 _nextConnectionId;
@@ -24,7 +24,7 @@ namespace GopherJSIPCBridge
         private Dictionary<Int32, string> _listeners;
 
         // Constructor
-        public ConnectionManager()
+        public IPCConnectionManager()
         {
             // Set up identifiers
             _nextConnectionId = 0;

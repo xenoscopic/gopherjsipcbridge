@@ -47,8 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\windows\ConnectionManager.cs">
-      <Link>ConnectionManager.cs</Link>
+    <Compile Include="..\..\..\windows\IPCConnectionManager.cs">
+      <Link>IPCConnectionManager.cs</Link>
     </Compile>
     <Compile Include="..\..\..\windows\WebBrowserBridge.cs">
       <Link>WebBrowserBridge.cs</Link>

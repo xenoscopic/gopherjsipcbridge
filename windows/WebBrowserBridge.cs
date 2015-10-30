@@ -9,7 +9,7 @@ namespace GopherJSIPCBridge
     public class WebBrowserBridge
     {
         // The connection manager
-        private ConnectionManager _connectionManager;
+        private IPCConnectionManager _connectionManager;
 
         // The underlying web browser
         private WebBrowser _browser;
@@ -21,7 +21,7 @@ namespace GopherJSIPCBridge
         )
         {
             // Create connection manager
-            _connectionManager = new ConnectionManager();
+            _connectionManager = new IPCConnectionManager();
 
             // Store the browser
             _browser = browser;
