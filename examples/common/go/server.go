@@ -27,6 +27,10 @@ func main() {
 		return
 	}
 
+	// Print a message to stderr so that the managing process knows it can start
+	// creating bridge instances
+	fmt.Fprintln(os.Stderr, "ready")
+
 	// Accept the first connection
 	fmt.Println("Accepting IPC connection...")
 	connection, err := listener.Accept()

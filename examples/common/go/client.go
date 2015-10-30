@@ -25,6 +25,7 @@ func main() {
 	connection, err := ipc.DialIPC(os.Args[1])
 	if err != nil {
 		fmt.Println("error: IPC connection failed:", err)
+		return
 	}
 
 	// Pass the connection to the benchmark

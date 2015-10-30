@@ -8,22 +8,12 @@ import "encoding/base64"
 // GopherJS imports
 import "github.com/gopherjs/gopherjs/js"
 
-const (
-	WKWebViewBridgeActionConnect = iota
-	WKWebViewBridgeActionConnectionRead
-	WKWebViewBridgeActionConnectionWrite
-	WKWebViewBridgeActionConnectionClose
-	WKWebViewBridgeActionListen
-	WKWebViewBridgeActionListenerAccept
-	WKWebViewBridgeActionListenerClose
-)
-
-// WKWebViewBridge implements the Bridge interface for Cocoa WKWebView
-// instances.
-type WKWebViewBridge struct {
-	// The message posting function provided via WKWebView's message handling
-	// infrastructure
-	hostMessenger *js.Object
+// WebBrowserBridge implements the Bridge interface for
+// System.Windows.Forms.WebBrowser instances.
+type WebBrowserBridge struct {
+	// The object provided via the WebBrowser's ObjectForScripting property
+	// TODO: Benchmark performance without caching this
+	hostProxy *js.Object
 
 	// Request/response sequencer for managing responses
 	sequences *sequencer
@@ -31,48 +21,80 @@ type WKWebViewBridge struct {
 
 func init() {
 	// Create a JavaScript wrapper function that the host can use to invoke the
-	// HostInitialize function with a WKWebViewBridge
+	// HostInitialize function with a WebBrowserBridge
 	js.Global.Set(
-		"_GIBWKWebViewBridgeInitialize",
-		func(message64 *js.Object) {
-			// Get the messenger object
-			// NOTE: For some reason, we can't get the postMessage method on
-			// this object and use Invoke(...) on it directly, it just doesn't
-			// work.  I don't know why, but for some reason doing
-			// Call("postMessage", ...) does work.
-			hostMessenger := js.Global.Get(
-				"webkit",
-			).Get(
-				"messageHandlers",
-			).Get(
-				"_GIBWKWebViewBridgeMessageHandler",
-			)
-
-			// Create a new WKWebViewBridge
-			bridge := &WKWebViewBridge{
-				hostMessenger: hostMessenger,
+		"_GIBWebBrowserBridgeInitialize",
+		func(message *js.Object) {
+			// Create a new WebBrowserBridge
+			bridge := &WebBrowserBridge{
+				hostProxy: js.Global.Get("external"),
 				sequences: newSequencer(),
 			}
 
-			// Create a wrapper for the host to interface with for sending
-			// results
-			js.Global.Set("_GIBWKWebViewBridge", js.MakeWrapper(bridge))
-
-			// Decode the initialization message
-			messageBytes, err := base64.StdEncoding.DecodeString(
-				message64.String(),
+			// Create functions that the bridge can use to call in and respond
+			// to queries
+			// NOTE: For the WKWebView bridge, we were able to just create a
+			// wrapper object around the bridge and could call that by
+			// evaluating JavaScript.  I had hoped a similar approach would work
+			// here, but it seems that the HtmlDocument.InvokeScript method
+			// can't invoke methods of the wrapper object, only global
+			// functions.
+			// TODO: I suppose we could make these methods private now that we
+			// don't need to export them for direct wrapping
+			js.Global.Set(
+				"_GIBWebBrowserBridgeRespondConnect",
+				func(sequence, connectionId int, errorMessage string) {
+					bridge.RespondConnect(sequence, connectionId, errorMessage)
+				},
 			)
-			if err != nil {
-				panic("unable to decode initialization message")
-			}
+			js.Global.Set(
+				"_GIBWebBrowserBridgeRespondConnectionRead",
+				func(sequence int, data64, errorMessage string) {
+					bridge.RespondConnectionRead(sequence, data64, errorMessage)
+				},
+			)
+			js.Global.Set(
+				"_GIBWebBrowserBridgeRespondConnectionWrite",
+				func(sequence, count int, errorMessage string) {
+					bridge.RespondConnectionWrite(sequence, count, errorMessage)
+				},
+			)
+			js.Global.Set(
+				"_GIBWebBrowserBridgeRespondConnectionClose",
+				func(sequence int, errorMessage string) {
+					bridge.RespondConnectionClose(sequence, errorMessage)
+				},
+			)
+			js.Global.Set(
+				"_GIBWebBrowserBridgeRespondListen",
+				func(sequence, listenerId int, errorMessage string) {
+					bridge.RespondListen(sequence, listenerId, errorMessage)
+				},
+			)
+			js.Global.Set(
+				"_GIBWebBrowserBridgeRespondListenerAccept",
+				func(sequence, connectionId int, errorMessage string) {
+					bridge.RespondListenerAccept(
+						sequence,
+						connectionId,
+						errorMessage,
+					)
+				},
+			)
+			js.Global.Set(
+				"_GIBWebBrowserBridgeRespondListenerClose",
+				func(sequence int, errorMessage string) {
+					bridge.RespondListenerClose(sequence, errorMessage)
+				},
+			)
 
 			// Call HostInitialize
-			HostInitialize(bridge, string(messageBytes))
+			HostInitialize(bridge, message.String())
 		},
 	)
 }
 
-func (b *WKWebViewBridge) Connect(endpoint string) chan ConnectResult {
+func (b *WebBrowserBridge) Connect(endpoint string) chan ConnectResult {
 	// Create a buffered (non-blocking) result channel
 	resultChannel := make(chan ConnectResult, 1)
 
@@ -80,20 +102,16 @@ func (b *WKWebViewBridge) Connect(endpoint string) chan ConnectResult {
 	sequence := b.sequences.push(resultChannel)
 
 	// Forward the request to the host with a sequence it can use to respond
-	b.hostMessenger.Call("postMessage", map[string]interface{}{
-		"sequence": sequence,
-		"action": WKWebViewBridgeActionConnect,
-		"endpoint": endpoint,
-	})
+	b.hostProxy.Call("Connect", endpoint, sequence)
 
 	// Return the result channel for the caller to wait on
 	return resultChannel
 }
 
-func (b *WKWebViewBridge) RespondConnect(
+func (b *WebBrowserBridge) RespondConnect(
 	sequence,
 	connectionId int,
-	errorMessage64 string,
+	errorMessage string,
 ) {
 	// Get the response channel
 	resultChannel, ok := b.sequences.pop(sequence).(chan ConnectResult)
@@ -104,11 +122,11 @@ func (b *WKWebViewBridge) RespondConnect(
 	// Respond
 	resultChannel <- ConnectResult{
 		connectionId: connectionId,
-		err: ErrorFromBase64EncodedErrorMessage(errorMessage64),
+		err: ErrorFromErrorMessage(errorMessage),
 	}
 }
 
-func (b *WKWebViewBridge) ConnectionRead(
+func (b *WebBrowserBridge) ConnectionRead(
 	connectionId,
 	length int,
 ) chan ConnectionReadResult {
@@ -119,21 +137,16 @@ func (b *WKWebViewBridge) ConnectionRead(
 	sequence := b.sequences.push(resultChannel)
 
 	// Forward the request to the host with a sequence it can use to respond
-	b.hostMessenger.Call("postMessage", map[string]interface{}{
-		"sequence": sequence,
-		"action": WKWebViewBridgeActionConnectionRead,
-		"connectionId": connectionId,
-		"length": length,
-	})
+	b.hostProxy.Call("ConnectionRead", connectionId, length, sequence)
 
 	// Return the result channel for the caller to wait on
 	return resultChannel
 }
 
-func (b *WKWebViewBridge) RespondConnectionRead(
+func (b *WebBrowserBridge) RespondConnectionRead(
 	sequence int,
 	data64 string,
-	errorMessage64 string,
+	errorMessage string,
 ) {
 	// Get the response channel
 	resultChannel, ok := b.sequences.pop(sequence).(chan ConnectionReadResult)
@@ -150,11 +163,11 @@ func (b *WKWebViewBridge) RespondConnectionRead(
 	// Respond
 	resultChannel <- ConnectionReadResult{
 		data: data,
-		err: ErrorFromBase64EncodedErrorMessage(errorMessage64),
+		err: ErrorFromErrorMessage(errorMessage),
 	}
 }
 
-func (b *WKWebViewBridge) ConnectionWrite(
+func (b *WebBrowserBridge) ConnectionWrite(
 	connectionId int,
 	data []byte,
 ) chan ConnectionWriteResult {
@@ -168,21 +181,16 @@ func (b *WKWebViewBridge) ConnectionWrite(
 	data64 := base64.StdEncoding.EncodeToString(data)
 
 	// Forward the request to the host with a sequence it can use to respond
-	b.hostMessenger.Call("postMessage", map[string]interface{}{
-		"sequence": sequence,
-		"action": WKWebViewBridgeActionConnectionWrite,
-		"connectionId": connectionId,
-		"data64": data64,
-	})
+	b.hostProxy.Call("ConnectionWrite", connectionId, data64, sequence)
 
 	// Return the result channel for the caller to wait on
 	return resultChannel
 }
 
-func (b *WKWebViewBridge) RespondConnectionWrite(
+func (b *WebBrowserBridge) RespondConnectionWrite(
 	sequence,
 	count int,
-	errorMessage64 string,
+	errorMessage string,
 ) {
 	// Get the response channel
 	resultChannel, ok := b.sequences.pop(sequence).(chan ConnectionWriteResult)
@@ -193,11 +201,11 @@ func (b *WKWebViewBridge) RespondConnectionWrite(
 	// Respond
 	resultChannel <- ConnectionWriteResult{
 		count: count,
-		err: ErrorFromBase64EncodedErrorMessage(errorMessage64),
+		err: ErrorFromErrorMessage(errorMessage),
 	}
 }
 
-func (b *WKWebViewBridge) ConnectionClose(
+func (b *WebBrowserBridge) ConnectionClose(
 	connectionId int,
 ) chan ConnectionCloseResult {
 	// Create a buffered (non-blocking) result channel
@@ -207,19 +215,15 @@ func (b *WKWebViewBridge) ConnectionClose(
 	sequence := b.sequences.push(resultChannel)
 
 	// Forward the request to the host with a sequence it can use to respond
-	b.hostMessenger.Call("postMessage", map[string]interface{}{
-		"sequence": sequence,
-		"action": WKWebViewBridgeActionConnectionClose,
-		"connectionId": connectionId,
-	})
+	b.hostProxy.Call("ConnectionClose", connectionId, sequence)
 
 	// Return the result channel for the caller to wait on
 	return resultChannel
 }
 
-func (b *WKWebViewBridge) RespondConnectionClose(
+func (b *WebBrowserBridge) RespondConnectionClose(
 	sequence int,
-	errorMessage64 string,
+	errorMessage string,
 ) {
 	// Get the response channel
 	resultChannel, ok := b.sequences.pop(sequence).(chan ConnectionCloseResult)
@@ -229,11 +233,11 @@ func (b *WKWebViewBridge) RespondConnectionClose(
 
 	// Respond
 	resultChannel <- ConnectionCloseResult{
-		err: ErrorFromBase64EncodedErrorMessage(errorMessage64),
+		err: ErrorFromErrorMessage(errorMessage),
 	}
 }
 
-func (b *WKWebViewBridge) Listen(endpoint string) chan ListenResult {
+func (b *WebBrowserBridge) Listen(endpoint string) chan ListenResult {
 	// Create a buffered (non-blocking) result channel
 	resultChannel := make(chan ListenResult, 1)
 
@@ -241,20 +245,16 @@ func (b *WKWebViewBridge) Listen(endpoint string) chan ListenResult {
 	sequence := b.sequences.push(resultChannel)
 
 	// Forward the request to the host with a sequence it can use to respond
-	b.hostMessenger.Call("postMessage", map[string]interface{}{
-		"sequence": sequence,
-		"action": WKWebViewBridgeActionListen,
-		"endpoint": endpoint,
-	})
+	b.hostProxy.Call("Listen", endpoint, sequence)
 
 	// Return the result channel for the caller to wait on
 	return resultChannel
 }
 
-func (b *WKWebViewBridge) RespondListen(
+func (b *WebBrowserBridge) RespondListen(
 	sequence,
 	listenerId int,
-	errorMessage64 string,
+	errorMessage string,
 ) {
 	// Get the response channel
 	resultChannel, ok := b.sequences.pop(sequence).(chan ListenResult)
@@ -265,11 +265,11 @@ func (b *WKWebViewBridge) RespondListen(
 	// Respond
 	resultChannel <- ListenResult{
 		listenerId: listenerId,
-		err: ErrorFromBase64EncodedErrorMessage(errorMessage64),
+		err: ErrorFromErrorMessage(errorMessage),
 	}
 }
 
-func (b *WKWebViewBridge) ListenerAccept(
+func (b *WebBrowserBridge) ListenerAccept(
 	listenerId int,
 ) chan ListenerAcceptResult {
 	// Create a buffered (non-blocking) result channel
@@ -279,20 +279,16 @@ func (b *WKWebViewBridge) ListenerAccept(
 	sequence := b.sequences.push(resultChannel)
 
 	// Forward the request to the host with a sequence it can use to respond
-	b.hostMessenger.Call("postMessage", map[string]interface{}{
-		"sequence": sequence,
-		"action": WKWebViewBridgeActionListenerAccept,
-		"listenerId": listenerId,
-	})
+	b.hostProxy.Call("ListenerAccept", listenerId, sequence)
 
 	// Return the result channel for the caller to wait on
 	return resultChannel
 }
 
-func (b *WKWebViewBridge) RespondListenerAccept(
+func (b *WebBrowserBridge) RespondListenerAccept(
 	sequence,
 	connectionId int,
-	errorMessage64 string,
+	errorMessage string,
 ) {
 	// Get the response channel
 	resultChannel, ok := b.sequences.pop(sequence).(chan ListenerAcceptResult)
@@ -303,11 +299,11 @@ func (b *WKWebViewBridge) RespondListenerAccept(
 	// Respond
 	resultChannel <- ListenerAcceptResult{
 		connectionId: connectionId,
-		err: ErrorFromBase64EncodedErrorMessage(errorMessage64),
+		err: ErrorFromErrorMessage(errorMessage),
 	}
 }
 
-func (b *WKWebViewBridge) ListenerClose(
+func (b *WebBrowserBridge) ListenerClose(
 	listenerId int,
 ) chan ListenerCloseResult {
 	// Create a buffered (non-blocking) result channel
@@ -317,19 +313,15 @@ func (b *WKWebViewBridge) ListenerClose(
 	sequence := b.sequences.push(resultChannel)
 
 	// Forward the request to the host with a sequence it can use to respond
-	b.hostMessenger.Call("postMessage", map[string]interface{}{
-		"sequence": sequence,
-		"action": WKWebViewBridgeActionListenerClose,
-		"listenerId": listenerId,
-	})
+	b.hostProxy.Call("ListenerClose", listenerId, sequence)
 
 	// Return the result channel for the caller to wait on
 	return resultChannel
 }
 
-func (b *WKWebViewBridge) RespondListenerClose(
+func (b *WebBrowserBridge) RespondListenerClose(
 	sequence int,
-	errorMessage64 string,
+	errorMessage string,
 ) {
 	// Get the response channel
 	resultChannel, ok := b.sequences.pop(sequence).(chan ListenerCloseResult)
@@ -339,6 +331,6 @@ func (b *WKWebViewBridge) RespondListenerClose(
 
 	// Respond
 	resultChannel <- ListenerCloseResult{
-		err: ErrorFromBase64EncodedErrorMessage(errorMessage64),
+		err: ErrorFromErrorMessage(errorMessage),
 	}
 }
