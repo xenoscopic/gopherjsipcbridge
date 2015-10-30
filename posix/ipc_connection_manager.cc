@@ -56,8 +56,8 @@ void gib::IPCConnectionManager::connect_async(
     // Lock the maps
     std::lock_guard<std::mutex> lock(_lock);
 
-    // Compute the next connection id.  Just to be paranoid, make sure we don't
-    // overflow the maximum value, because we use -1 as the invalid identifier.
+    // Compute the next connection id.  Watch for overflow, because we use -1 as
+    // the invalid identifier.
     if (_next_connection_id < 0) {
         handler(-1, "connection ids exhausted");
         return;
@@ -65,6 +65,13 @@ void gib::IPCConnectionManager::connect_async(
     std::int32_t connection_id = _next_connection_id++;
 
     // Create the socket
+    // TODO: If we move to C++14 (and get generalized lambda captures), it'd be
+    // nice to create the connection and then add it to the connection map after
+    // connection has succeeded (that way we don't have to do an add/remove and
+    // burn a connection id for failed connections).  But sockets are
+    // non-copyable, and we don't have a way to std::move them into the handler
+    // lambda, so for now we have to create them in-place to support
+    // asynchronous operations.
     _connections.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(connection_id),
@@ -246,47 +253,31 @@ void gib::IPCConnectionManager::listen_async(
     // Lock the maps
     std::lock_guard<std::mutex> lock(_lock);
 
-    // Compute the next listener id.  Just to be paranoid, make sure we don't
-    // overflow the maximum value, because we use -1 as the invalid identifier.
-    if (_next_listener_id < 0) {
-        handler(-1, "listener ids exhausted");
-        return;
-    }
-    std::int32_t listener_id = _next_listener_id++;
-
     // Create the listener
-    _listeners.emplace(
-        std::piecewise_construct,
-        std::forward_as_tuple(listener_id),
-        std::forward_as_tuple(_io_service)
-    );
-
-    // Grab the listener entry
-    auto listener_entry = _listeners.find(listener_id);
+    asio::local::stream_protocol::acceptor listener(_io_service);
 
     // There is no asynchronous form for the methods used here, but they should
     // all succeed/fail instantly
 
-    // Open the acceptor, bind it to the specified endpoint, and start
-    // listening.  Clean up if any of these steps fail.
+    // Try to initialize the listener, cleaning up if initialization fails
     bool opened = false;
     bool bound = false;
     try {
-        listener_entry->second.open();
+        // Open the listener
+        listener.open();
         opened = true;
-        listener_entry->second.bind(
-            asio::local::stream_protocol::endpoint(path)
-        );
+
+        // Bind the listener
+        listener.bind(asio::local::stream_protocol::endpoint(path));
         bound = true;
-        listener_entry->second.listen();
+
+        // Start listening
+        listener.listen();
     } catch (const asio::system_error & e) {
         // Close the listener if it is open
         if (opened) {
-            listener_entry->second.close();
+            listener.close();
         }
-
-        // Remove it from the listener map
-        _listeners.erase(listener_entry);
 
         // Remove its endpoint if it is bound (if it isn't bound, it may have
         // failed because it is in use by another process)
@@ -300,6 +291,23 @@ void gib::IPCConnectionManager::listen_async(
         // Bail
         return;
     }
+
+    // Compute the next listener id.  Just to be paranoid, make sure we don't
+    // overflow the maximum value, because we use -1 as the invalid identifier.
+    if (_next_listener_id < 0) {
+        listener.close();
+        unlink(path.c_str());
+        handler(-1, "listener ids exhausted");
+        return;
+    }
+    std::int32_t listener_id = _next_listener_id++;
+
+    // Store the listener
+    _listeners.emplace(
+        std::piecewise_construct,
+        std::forward_as_tuple(listener_id),
+        std::forward_as_tuple(std::move(listener))
+    );
 
     // Store the endpoint for later cleanup
     _listener_endpoints[listener_id] = path;
@@ -326,15 +334,21 @@ void gib::IPCConnectionManager::listener_accept_async(
         return;
     }
 
-    // Compute the next connection id.  Just to be paranoid, make sure we don't
-    // overflow the maximum value, because we use -1 as the invalid identifier.
+    // Compute the next connection id.  Watch for overflow, because we use -1 as
+    // the invalid identifier.
     if (_next_connection_id < 0) {
-        handler(-1, "listener ids exhausted");
+        handler(-1, "connection ids exhausted");
         return;
     }
     std::int32_t connection_id = _next_connection_id++;
 
     // Create the socket that will represent the accepted connection
+    // TODO: If we move to C++14 (and get generalized lambda captures), it'd be
+    // nice to create the connection and then add it to the connection map after
+    // accepting has succeeded (that way we don't have to do an add/remove and
+    // burn a connection id for failed accept).  But sockets are non-copyable,
+    // and we don't have a way to std::move them into the handler lambda, so for
+    // now we have to create them in-place to support asynchronous operations.
     _connections.emplace(
         std::piecewise_construct,
         std::forward_as_tuple(connection_id),
