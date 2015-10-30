@@ -83,26 +83,29 @@ func (c *ipcConn) RemoteAddr() net.Addr {
 }
 
 func (c *ipcConn) SetDeadline(t time.Time) error {
+	// TODO: Implement.  See note in individual methods below.
 	return errors.New("read/write deadlines not supported")
 }
 
 func (c *ipcConn) SetReadDeadline(t time.Time) error {
-	// TODO: On POSIX, we can implement this using SO_RCVTIMEO, but the CLR API
-	// doesn't support ReadTimeout for NamedPipe(Client|Server)Stream.  It's
-	// also not clear how we'd implement this precisely since it's done as an
-	// absolute time instead of a relative one.  Perhaps we can implement this
-	// from the GopherJS side?  Should check the GopherJS websocket deadline
-	// implementation.
+	// TODO: Implement.  We should store the deadline time, and then when making
+	// read calls across the bridge, convert it to a timeout based on the start
+	// time of the call.  This isn't perfect, and will slip a bit past the
+	// deadline given the latency of the bridge, but I think it could still be
+	// useful.  On POSIX, we can implement timeouts using SO_RCVTIMEO, and on
+	// Windows we can create a CancellationTokenSource with a timeout and pass
+	// a token from that to ReadAsync.
 	return errors.New("read deadlines not supported")
 }
 
 func (c *ipcConn) SetWriteDeadline(t time.Time) error {
-	// TODO: On POSIX, we can implement this using SO_SNDTIMEO, but the CLR API
-	// doesn't support WriteTimeout for NamedPipe(Client|Server)Stream.  It's
-	// also not clear how we'd implement this precisely since it's done as an
-	// absolute time instead of a relative one.  Perhaps we can implement this
-	// from the GopherJS side?  Should check the GopherJS websocket deadline
-	// implementation.
+	// TODO: Implement.  We should store the deadline time, and then when making
+	// write calls across the bridge, convert it to a timeout based on the start
+	// time of the call.  This isn't perfect, and will slip a bit past the
+	// deadline given the latency of the bridge, but I think it could still be
+	// useful.  On POSIX, we can implement timeouts using SO_SNDTIMEO, and on
+	// Windows we can create a CancellationTokenSource with a timeout and pass
+	// a token from that to WriteAsync.
 	return errors.New("write deadlines not supported")
 }
 

@@ -15,8 +15,11 @@
 
 @interface AppDelegate ()
 
-// Interface properties
+// Common properties
 @property (weak) IBOutlet NSWindow *window;
+
+// Common methods
+- (NSTask *)startServerTask:(NSString *)socketPath;
 
 // WebView example properties
 @property (strong) IBOutlet WebView *webView;
@@ -56,6 +59,34 @@
     
 }
 
+- (NSTask *)startServerTask:(NSString *)socketPath {
+    // Create the task
+    NSTask *result = [[NSTask alloc] init];
+
+    // Set the target
+    result.launchPath = [[NSBundle mainBundle] pathForResource:@"server"
+                                                        ofType:nil];
+
+    // Set arguments
+    result.arguments = @[socketPath];
+
+    // Redirect stderr so we can monitor for initialization
+    NSPipe *standardError = [NSPipe pipe];
+    result.standardError = standardError;
+
+    // Start the task
+    [result launch];
+
+    // Wait for it to print to stderr, indicating that it is ready
+    [standardError.fileHandleForReading availableData];
+
+    // Close our end of stderr, we don't care
+    [standardError.fileHandleForReading closeFile];
+
+    // All done
+    return result;
+}
+
 - (IBAction)startWebViewExample:(id)sender {
     // Set ourselves as the frame load delegate
     self.webView.frameLoadDelegate = self;
@@ -75,19 +106,8 @@
     NSString *socketPath =
         [NSTemporaryDirectory() stringByAppendingPathComponent:@"wv.sock"];
 
-    // Compute the path to the server task
-    NSString *serverPath = [[NSBundle mainBundle] pathForResource:@"server"
-                                                           ofType:nil];
-
     // Start the Go server that we'll communicate with
-    self.webViewGoServer = [NSTask launchedTaskWithLaunchPath:serverPath
-                                                  arguments:@[socketPath]];
-
-    // HACK: Wait for the server to start up and start listening on the socket
-    // path.  In a real application, you'd want to do something a bit more
-    // robust, like have the server signal the application.
-    // TODO: Fix this
-    [NSThread sleepForTimeInterval:1.0];
+    self.webViewGoServer = [self startServerTask:socketPath];
 
     // Create the bridge
     self.webViewBridge = [[GIBWebViewBridge alloc] initWithWebView:self.webView
@@ -122,19 +142,8 @@ didFinishNavigation:(WKNavigation *)navigation {
     NSString *socketPath =
         [NSTemporaryDirectory() stringByAppendingPathComponent:@"wkwv.sock"];
 
-    // Compute the path to the server task
-    NSString *serverPath = [[NSBundle mainBundle] pathForResource:@"server"
-                                                           ofType:nil];
-
     // Start the Go server that we'll communicate with
-    self.webViewGoServer = [NSTask launchedTaskWithLaunchPath:serverPath
-                                                  arguments:@[socketPath]];
-
-    // HACK: Wait for the server to start up and start listening on the socket
-    // path.  In a real application, you'd want to do something a bit more
-    // robust, like have the server signal the application.
-    // TODO: Fix this
-    [NSThread sleepForTimeInterval:1.0];
+    self.webViewGoServer = [self startServerTask:socketPath];
 
     // Create the bridge
     self.wkWebViewBridge =
@@ -149,19 +158,8 @@ didFinishNavigation:(WKNavigation *)navigation {
     NSString *socketPath =
         [NSTemporaryDirectory() stringByAppendingPathComponent:@"go.sock"];
 
-    // Compute the path to the server task
-    NSString *serverPath = [[NSBundle mainBundle] pathForResource:@"server"
-                                                           ofType:nil];
-
     // Start the Go server that we'll communicate with
-    self.rawGoServer = [NSTask launchedTaskWithLaunchPath:serverPath
-                                                arguments:@[socketPath]];
-
-    // HACK: Wait for the server to start up and start listening on the socket
-    // path.  In a real application, you'd want to do something a bit more
-    // robust, like have the server signal the application.
-    // TODO: Fix this
-    [NSThread sleepForTimeInterval:1.0];
+    self.rawGoServer = [self startServerTask:socketPath];
 
     // Compute the path to the server task
     NSString *clientPath = [[NSBundle mainBundle] pathForResource:@"client"
