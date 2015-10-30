@@ -1,7 +1,7 @@
 #import "GIBConnectionManager.h"
 
 // GopherJSIPCBridge includes
-#include "posix_ipc_connection_manager.h"
+#include "ipc_connection_manager.h"
 
 
 @interface GIBConnectionManager ()
@@ -11,7 +11,7 @@
 // instance variable to manage lifetime (e.g. a std::unique_ptr) requires that
 // -fobjc-call-cxx-cdtors be passed to the compiler:
 // http://stackoverflow.com/a/5090029
-@property (assign, nonatomic) gib::POSIXIPCConnectionManager *connectionManager;
+@property (assign, nonatomic) gib::IPCConnectionManager *connectionManager;
 
 @end
 
@@ -35,7 +35,7 @@
     self.dispatchQueue = dispatchQueue;
 
     // Create the connection manager
-    self.connectionManager = new gib::POSIXIPCConnectionManager();
+    self.connectionManager = new gib::IPCConnectionManager();
 
     // All done
     return self;

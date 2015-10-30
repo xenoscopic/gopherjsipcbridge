@@ -2,10 +2,10 @@
 #import <Foundation/Foundation.h>
 
 
-// Thin wrapper around the C++ ConnectionManager class that translates between
-// C++ types and Cocoa types.  This wrapper additionally allows callers to
-// specify the dispatch queue where handlers should be invoked (the C++
-// ConnectionManager invokes them either in the calling thread or the I/O
+// Thin wrapper around the C++ IPCConnectionManager class that translates
+// between C++ types and Cocoa types.  This wrapper additionally allows callers
+// to specify the dispatch queue where handlers should be invoked (the C++
+// IPCConnectionManager invokes them either in the calling thread or the I/O
 // service pump thread).
 @interface GIBConnectionManager : NSObject
 

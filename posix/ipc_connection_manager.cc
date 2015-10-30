@@ -1,4 +1,4 @@
-#include "posix_ipc_connection_manager.h"
+#include "ipc_connection_manager.h"
 
 // Standard includes
 #include <stdexcept>
@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 
-gib::POSIXIPCConnectionManager::POSIXIPCConnectionManager() :
+gib::IPCConnectionManager::IPCConnectionManager() :
 _io_service(),
 _io_service_pump([this]() {
     // Create a work object to keep the I/O service loop from exiting when there
@@ -23,7 +23,7 @@ _next_listener_id(0) {
 }
 
 
-gib::POSIXIPCConnectionManager::~POSIXIPCConnectionManager() {
+gib::IPCConnectionManager::~IPCConnectionManager() {
     // Cancel the run loop being executed in the pump thread (this cancels the
     // work object, allowing the run() call to return)
     _io_service.stop();
@@ -49,7 +49,7 @@ gib::POSIXIPCConnectionManager::~POSIXIPCConnectionManager() {
 }
 
 
-void gib::POSIXIPCConnectionManager::connect_async(
+void gib::IPCConnectionManager::connect_async(
     const std::string & path,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
@@ -101,7 +101,7 @@ void gib::POSIXIPCConnectionManager::connect_async(
 }
 
 
-void gib::POSIXIPCConnectionManager::connection_read_async(
+void gib::IPCConnectionManager::connection_read_async(
     std::int32_t connection_id,
     void * buffer,
     std::size_t length,
@@ -165,7 +165,7 @@ void gib::POSIXIPCConnectionManager::connection_read_async(
 }
 
 
-void gib::POSIXIPCConnectionManager::connection_write_async(
+void gib::IPCConnectionManager::connection_write_async(
     std::int32_t connection_id,
     const void * buffer,
     std::size_t length,
@@ -215,7 +215,7 @@ void gib::POSIXIPCConnectionManager::connection_write_async(
 }
 
 
-void gib::POSIXIPCConnectionManager::connection_close_async(
+void gib::IPCConnectionManager::connection_close_async(
     std::int32_t connection_id,
     std::function<void(const std::string &)> handler
 ) {
@@ -239,7 +239,7 @@ void gib::POSIXIPCConnectionManager::connection_close_async(
 }
 
 
-void gib::POSIXIPCConnectionManager::listen_async(
+void gib::IPCConnectionManager::listen_async(
     const std::string & path,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
@@ -309,7 +309,7 @@ void gib::POSIXIPCConnectionManager::listen_async(
 }
 
 
-void gib::POSIXIPCConnectionManager::listener_accept_async(
+void gib::IPCConnectionManager::listener_accept_async(
     std::int32_t listener_id,
     std::function<void(std::int32_t, const std::string &)> handler
 ) {
@@ -372,7 +372,7 @@ void gib::POSIXIPCConnectionManager::listener_accept_async(
 }
 
 
-void gib::POSIXIPCConnectionManager::listener_close_async(
+void gib::IPCConnectionManager::listener_close_async(
     std::int32_t listener_id,
     std::function<void(const std::string &)> handler
 ) {

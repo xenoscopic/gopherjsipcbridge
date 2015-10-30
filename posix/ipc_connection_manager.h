@@ -1,5 +1,5 @@
-#ifndef POSIX_IPC_CONNECTION_MANAGER_H
-#define POSIX_IPC_CONNECTION_MANAGER_H
+#ifndef IPC_CONNECTION_MANAGER_H
+#define IPC_CONNECTION_MANAGER_H
 
 
 // C standard includes
@@ -21,29 +21,27 @@
 namespace gib {
 
 
-// POSIXIPCConnectionManager implements IPC connection facilities on POSIX
-// platforms using UNIX domain sockets.  It is completely thread-safe.  Handlers
-// passed to the connection manager will be invoked *during* the call that
-// passed the handler (if there is an error starting the asynchronous operation
-// or the operation can be completed synchronously without blocking) or will be
-// invoked from the POSIXIPCConnectionManager's I/O pumping thread.  Callers and
-// handlers must be prepared for either eventuality.  All open connections will
+// IPCConnectionManager implements IPC connection facilities on POSIX platforms
+// using UNIX domain sockets.  It is completely thread-safe.  Handlers passed to
+// the connection manager will be invoked either *during* the call that passed
+// the handler (if there is an error starting the asynchronous operation or the
+// operation can be completed synchronously without blocking) or will be invoked
+// from the IPCConnectionManager's I/O pumping thread.  Callers and handlers
+// must be prepared for either eventuality.  All open connections will
 // automatically be closed upon destruction.
-class POSIXIPCConnectionManager final {
+class IPCConnectionManager final {
 
 public:
 
     // Constructor
-    POSIXIPCConnectionManager();
+    IPCConnectionManager();
 
     // Disable copying
-    POSIXIPCConnectionManager(const POSIXIPCConnectionManager &) = delete;
-    POSIXIPCConnectionManager& operator=(
-        const POSIXIPCConnectionManager &
-    ) = delete;
+    IPCConnectionManager(const IPCConnectionManager &) = delete;
+    IPCConnectionManager& operator=(const IPCConnectionManager &) = delete;
 
     // Destructor
-    ~POSIXIPCConnectionManager();
+    ~IPCConnectionManager();
 
     // Asynchronously create a new connection
     void connect_async(
@@ -133,4 +131,4 @@ private:
 } // namespace gib
 
 
-#endif // POSIX_IPC_CONNECTION_MANAGER_H
+#endif // IPC_CONNECTION_MANAGER_H
