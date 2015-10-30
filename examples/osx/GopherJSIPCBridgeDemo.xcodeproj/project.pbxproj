@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		1617406E1BE40FCF00B4FB94 /* ipc_connection_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1617406C1BE40FCF00B4FB94 /* ipc_connection_manager.cc */; };
+		161740711BE41A4300B4FB94 /* GIBIPCConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 161740701BE41A4300B4FB94 /* GIBIPCConnectionManager.mm */; };
 		1622299A1BE12F40006EA134 /* GIBJSContextBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 162229991BE12F40006EA134 /* GIBJSContextBridge.m */; };
 		163DBE391BDBE8CC004ABA29 /* GIBWKWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */; };
 		163DBE3C1BDBF9FB004ABA29 /* GIBWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */; };
-		163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */; };
 		163DBE421BDD86FA004ABA29 /* NSString+GIB.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE411BDD86FA004ABA29 /* NSString+GIB.m */; };
 		163DBE451BDE54DB004ABA29 /* NSData+GIB.m in Sources */ = {isa = PBXBuildFile; fileRef = 163DBE441BDE54DB004ABA29 /* NSData+GIB.m */; };
 		164F3AC91BD81F3500C2E92A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 164F3AC81BD81F3500C2E92A /* WebKit.framework */; };
@@ -25,14 +25,14 @@
 /* Begin PBXFileReference section */
 		1617406C1BE40FCF00B4FB94 /* ipc_connection_manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ipc_connection_manager.cc; sourceTree = "<group>"; };
 		1617406D1BE40FCF00B4FB94 /* ipc_connection_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ipc_connection_manager.h; sourceTree = "<group>"; };
+		1617406F1BE41A4300B4FB94 /* GIBIPCConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBIPCConnectionManager.h; sourceTree = "<group>"; };
+		161740701BE41A4300B4FB94 /* GIBIPCConnectionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GIBIPCConnectionManager.mm; sourceTree = "<group>"; };
 		162229981BE12F40006EA134 /* GIBJSContextBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBJSContextBridge.h; sourceTree = "<group>"; };
 		162229991BE12F40006EA134 /* GIBJSContextBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBJSContextBridge.m; sourceTree = "<group>"; };
 		163DBE371BDBE8CC004ABA29 /* GIBWKWebViewBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBWKWebViewBridge.h; sourceTree = "<group>"; };
 		163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBWKWebViewBridge.m; sourceTree = "<group>"; };
 		163DBE3A1BDBF9FB004ABA29 /* GIBWebViewBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBWebViewBridge.h; sourceTree = "<group>"; };
 		163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIBWebViewBridge.m; sourceTree = "<group>"; };
-		163DBE3D1BDD330F004ABA29 /* GIBConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIBConnectionManager.h; sourceTree = "<group>"; };
-		163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GIBConnectionManager.mm; sourceTree = "<group>"; };
 		163DBE401BDD86FA004ABA29 /* NSString+GIB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+GIB.h"; sourceTree = "<group>"; };
 		163DBE411BDD86FA004ABA29 /* NSString+GIB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+GIB.m"; sourceTree = "<group>"; };
 		163DBE431BDE54DB004ABA29 /* NSData+GIB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GIB.h"; sourceTree = "<group>"; };
@@ -99,8 +99,8 @@
 				163DBE3B1BDBF9FB004ABA29 /* GIBWebViewBridge.m */,
 				163DBE371BDBE8CC004ABA29 /* GIBWKWebViewBridge.h */,
 				163DBE381BDBE8CC004ABA29 /* GIBWKWebViewBridge.m */,
-				163DBE3D1BDD330F004ABA29 /* GIBConnectionManager.h */,
-				163DBE3E1BDD330F004ABA29 /* GIBConnectionManager.mm */,
+				1617406F1BE41A4300B4FB94 /* GIBIPCConnectionManager.h */,
+				161740701BE41A4300B4FB94 /* GIBIPCConnectionManager.mm */,
 				163DBE431BDE54DB004ABA29 /* NSData+GIB.h */,
 				163DBE441BDE54DB004ABA29 /* NSData+GIB.m */,
 				163DBE401BDD86FA004ABA29 /* NSString+GIB.h */,
@@ -238,10 +238,10 @@
 			files = (
 				163DBE3C1BDBF9FB004ABA29 /* GIBWebViewBridge.m in Sources */,
 				163DBE391BDBE8CC004ABA29 /* GIBWKWebViewBridge.m in Sources */,
+				161740711BE41A4300B4FB94 /* GIBIPCConnectionManager.mm in Sources */,
 				163DBE451BDE54DB004ABA29 /* NSData+GIB.m in Sources */,
 				1622299A1BE12F40006EA134 /* GIBJSContextBridge.m in Sources */,
 				16EFEEFF1BD79F3B00C1E7D8 /* main.m in Sources */,
-				163DBE3F1BDD330F004ABA29 /* GIBConnectionManager.mm in Sources */,
 				1617406E1BE40FCF00B4FB94 /* ipc_connection_manager.cc in Sources */,
 				163DBE421BDD86FA004ABA29 /* NSString+GIB.m in Sources */,
 				16EFEEFC1BD79F3B00C1E7D8 /* AppDelegate.m in Sources */,

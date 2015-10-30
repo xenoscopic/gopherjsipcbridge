@@ -1,10 +1,10 @@
-#import "GIBConnectionManager.h"
+#import "GIBIPCConnectionManager.h"
 
 // GopherJSIPCBridge includes
 #include "ipc_connection_manager.h"
 
 
-@interface GIBConnectionManager ()
+@interface GIBIPCConnectionManager ()
 
 @property (strong, nonatomic) dispatch_queue_t dispatchQueue;
 // NOTE: We use a direct pointer that we manually deallocate because using an
@@ -18,7 +18,7 @@
 
 // TODO: We can probably use direct ivar access in here for performance.  Worth
 // testing anyway.
-@implementation GIBConnectionManager
+@implementation GIBIPCConnectionManager
 
 - (instancetype)init {
     // Call the more general initializer

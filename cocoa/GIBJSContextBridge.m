@@ -1,7 +1,7 @@
 #import "GIBJSContextBridge.h"
 
 // GopherJS IPC Bridge imports
-#import "GIBConnectionManager.h"
+#import "GIBIPCConnectionManager.h"
 #import "NSString+GIB.h"
 #import "NSData+GIB.h"
 
@@ -57,7 +57,7 @@
 @interface GIBJSContextBridgeProxy : NSObject <GIBJSContextBridgeProxyExports>
 
 // The underlying connection manager
-@property (nonatomic) GIBConnectionManager *connectionManager;
+@property (nonatomic) GIBIPCConnectionManager *connectionManager;
 
 // Designated initializer
 - (instancetype)initWithInteractionQueue:(dispatch_queue_t)queue;
@@ -75,7 +75,7 @@
 
     // Create the connection manager
     self.connectionManager =
-        [[GIBConnectionManager alloc] initWithHandlerDispatchQueue:queue];
+        [[GIBIPCConnectionManager alloc] initWithHandlerDispatchQueue:queue];
 
     // All done
     return self;

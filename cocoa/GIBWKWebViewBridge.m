@@ -1,7 +1,7 @@
 #import "GIBWKWebViewBridge.h"
 
 // GopherJS IPC Bridge imports
-#import "GIBConnectionManager.h"
+#import "GIBIPCConnectionManager.h"
 #import "NSString+GIB.h"
 #import "NSData+GIB.h"
 
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, WKWebViewBridgeAction) {
 @interface GIBWKWebViewBridge ()
 
 // The underlying connection manager
-@property (nonatomic) GIBConnectionManager *connectionManager;
+@property (nonatomic) GIBIPCConnectionManager *connectionManager;
 
 // The target web view, referenced weakly to avoid retain cycles
 @property (weak, nonatomic) WKWebView *webView;
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSUInteger, WKWebViewBridgeAction) {
 
     // Create the connection manager.  Enforce that all callbacks take place on
     // the main thread (the default if not specified).
-    self.connectionManager = [[GIBConnectionManager alloc] init];
+    self.connectionManager = [[GIBIPCConnectionManager alloc] init];
 
     // Store the web view
     self.webView = webView;

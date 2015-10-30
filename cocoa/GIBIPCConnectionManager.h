@@ -7,7 +7,7 @@
 // to specify the dispatch queue where handlers should be invoked (the C++
 // IPCConnectionManager invokes them either in the calling thread or the I/O
 // service pump thread).
-@interface GIBConnectionManager : NSObject
+@interface GIBIPCConnectionManager : NSObject
 
 // Designated initializer.  This will create a connection manager that invokes
 // handlers on the main thread.
