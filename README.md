@@ -1,7 +1,8 @@
 # GopherJSIPCBridge
 
-A framework to allow GopherJS code running in various JavaScript contexts to
-create and accept IPC connections (Unix domain sockets and Windows named pipes).
+A framework to allow GopherJS code (or really any JavaScript-based language)
+running in various JavaScript contexts to create and accept IPC connections
+(Unix domain sockets and Windows named pipes).
 
 The purpose of this project is to allow for the creation of mobile or desktop
 applications using web technologies for their user interface with a more
