@@ -9,9 +9,9 @@ applications using web technologies for their user interface with a more
 powerful backend engine that might be shared across platforms.  Existing
 solutions are either underpowered (Cordova et al.) or massive in size because
 they distribute an entire Chromium browser (NW.js, Electron, et al.).  The
-proliferation of high-performance web view components and all platforms,
-combined with JavaScript bridge APIs, opens up exiting possibilities for more
-nimble and high-performance applications.
+proliferation of high-performance web view components on all platforms, combined
+with JavaScript bridge APIs, opens up exiting possibilities for more nimble and
+high-performance applications.
 
 
 ## Status
